@@ -75,6 +75,9 @@ COMENT_MULTI = "/*"([^*]|\*+[^/])*\*+"/"
 "("         { return symbol(sym.PAREN_A); }
 ")"         { return symbol(sym.PAREN_C); }
 ";"         { return symbol(sym.PUNTO_COMA); }
+":"         { return symbol(sym.DOS_PUNTOS); }
+
+"var"         { return symbol(sym.VAR); }
 
 
 {ID}        { 

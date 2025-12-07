@@ -36,10 +36,11 @@ terminal IGUAL_IGUAL, DIFERENTE, MENOR_IGUAL, MAYOR_IGUAL, MENOR, MAYOR, IGUAL;
 terminal AND, OR, NOT;
 
 terminal PAREN_A, PAREN_C;
-terminal PUNTO_COMA;
+terminal PUNTO_COMA, DOS_PUNTOS;
 
 terminal ENTERO, DECIMAL, BOOLEANO, CADENA, CARACTER;
 terminal ID;
+terminal VAR;
 
 non terminal List inicio, lista_sentencias;
 non terminal Stmt sentencia, print_stmt, declaracion;
@@ -86,7 +87,7 @@ print_stmt ::=
 
 //Declaracion
 declaracion ::=
-    tipo:t ID:nombre IGUAL expr:e PUNTO_COMA 
+    VAR ID:nombre DOS_PUNTOS tipo:t IGUAL expr:e PUNTO_COMA 
         {:
             RESULT = new VarDeclStmt(t, nombre.toString(), e, eleft, eright);
         :}
