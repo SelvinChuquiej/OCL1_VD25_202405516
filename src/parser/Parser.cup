@@ -43,7 +43,7 @@ terminal ID;
 terminal VAR;
 
 non terminal List inicio, lista_sentencias;
-non terminal Stmt sentencia, print_stmt, declaracion;
+non terminal Stmt sentencia, print_stmt, declaracion, asignacion;
 non terminal Expr expr;
 non terminal TipoDato tipo;
 
@@ -75,6 +75,7 @@ lista_sentencias ::=
 sentencia ::=
     print_stmt:p    {: RESULT = p; :} 
     | declaracion:d {: RESULT = d; :}
+    | asignacion:a  {: RESULT = a; :}
     ;
 
 //print
@@ -90,6 +91,14 @@ declaracion ::=
     VAR ID:nombre DOS_PUNTOS tipo:t IGUAL expr:e PUNTO_COMA 
         {:
             RESULT = new VarDeclStmt(t, nombre.toString(), e, eleft, eright);
+        :}
+    ;
+
+//Asignacion
+asignacion ::=
+    ID:nombre IGUAL expr:e PUNTO_COMA
+        {:
+            RESULT = new AsigStmt (nombre.toString(), e, eleft, eright);
         :}
     ;
 
