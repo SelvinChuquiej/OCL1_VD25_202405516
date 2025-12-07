@@ -1,0 +1,155 @@
+/* Parser.cup */
+package parser;
+
+import java_cup.runtime.*;
+import lexer.Lexer;
+
+import java.util.List;
+import java.util.ArrayList;
+
+import simbolo.*;
+import AST.*;
+import expresiones.*;
+import statements.*;
+
+parser code {:
+    public Parser(Lexer lexer) {
+        super(lexer);
+    }
+
+    @Override
+    public void report_error(String message, Object info) {
+        System.out.println("Error sintáctico: " + message);
+    }
+:};
+
+action code {:
+    // Helpers si luego los necesitas
+:};
+
+terminal INT, DOUBLE, BOOL, CHAR, STRING;
+terminal TRUE, FALSE;
+terminal PRINT;
+
+terminal MAS, MENOS, POR, DIV, MOD, POT;
+terminal IGUAL_IGUAL, DIFERENTE, MENOR_IGUAL, MAYOR_IGUAL, MENOR, MAYOR;
+terminal AND, OR, NOT;
+
+terminal PAREN_A, PAREN_C;
+terminal PUNTO_COMA;
+
+terminal ENTERO, DECIMAL, BOOLEANO, CADENA, CARACTER;
+terminal ID;
+
+non terminal List inicio, lista_sentencias;
+non terminal Stmt sentencia, print_stmt;
+non terminal Expr expr;
+non terminal TipoDato tipo;
+
+precedence right POT;
+precedence left POR, DIV, MOD;
+precedence left MAS, MENOS;
+
+start with inicio;
+
+inicio ::=
+    lista_sentencias:ls
+        {: RESULT = ls; :}
+    ;
+
+//Lista Sentencias
+lista_sentencias ::=
+      lista_sentencias:ls sentencia:s
+        {: 
+           if (s != null) ls.add(s);
+           RESULT = ls; 
+        :}
+    | /* VACIO */
+        {: 
+           RESULT = new ArrayList<>(); 
+        :}
+    ;
+
+//Sentencia
+sentencia ::=
+    print_stmt:p {: RESULT = p; :}
+    ;
+
+//print
+print_stmt ::=
+    PRINT PAREN_A expr:e PAREN_C PUNTO_COMA
+        {:
+           RESULT = new PrintStmt(e, eleft, eright);
+        :}
+    ;
+
+tipo ::=
+      INT    {: RESULT = TipoDato.ENTERO;   :}
+    | DOUBLE {: RESULT = TipoDato.DECIMAL;  :}
+    | BOOL   {: RESULT = TipoDato.BOOLEANO; :}
+    | CHAR   {: RESULT = TipoDato.CARACTER; :}
+    | STRING {: RESULT = TipoDato.CADENA;   :}
+    ;
+
+
+expr ::=
+      expr:e1 MAS expr:e2
+        {:
+           RESULT = new OpAritmeticosExpr(e1, e2, OpAritmeticosExpr.OpBin.MAS, e1left, e2right);
+        :}
+    | expr:e1 MENOS expr:e2
+        {:
+           RESULT = new OpAritmeticosExpr(e1, e2, OpAritmeticosExpr.OpBin.MENOS, 0, 0);
+        :}
+    | expr:e1 POR expr:e2
+        {:
+           RESULT = new OpAritmeticosExpr(e1, e2, OpAritmeticosExpr.OpBin.POR, 0, 0);
+        :}
+    | expr:e1 DIV expr:e2
+        {:
+           RESULT = new OpAritmeticosExpr(e1, e2, OpAritmeticosExpr.OpBin.DIV, 0, 0);
+        :}
+    | expr:e1 MOD expr:e2
+        {:
+           RESULT = new OpAritmeticosExpr(e1, e2, OpAritmeticosExpr.OpBin.MOD, 0, 0);
+        :}
+    | expr:e1 POT expr:e2
+        {:
+           RESULT = new OpAritmeticosExpr(e1, e2, OpAritmeticosExpr.OpBin.POT, 0, 0);
+        :}
+    | PAREN_A expr:e PAREN_C
+        {:
+           RESULT = e;
+        :}
+    | ENTERO:n
+        {:
+           int v = Integer.parseInt(n.toString());
+           RESULT = new ValorExpr(TipoDato.ENTERO, v, nleft, nright);
+        :}
+    | DECIMAL:d
+        {:
+           double v = Double.parseDouble(d.toString());
+           RESULT = new ValorExpr(TipoDato.DECIMAL, v, dleft, dright);
+        :}
+    | CADENA:s
+        {:
+           RESULT = new ValorExpr(TipoDato.CADENA, s.toString(),sleft, sright);
+        :}
+    | CARACTER:c
+        {:
+           char ch = c.toString().charAt(0);
+           RESULT = new ValorExpr(TipoDato.CARACTER, ch, cleft, cright);
+        :}
+    | TRUE:t
+        {:
+           RESULT = new ValorExpr(TipoDato.BOOLEANO, true, tleft, tright);
+        :}
+    | FALSE:f
+        {:
+           RESULT = new ValorExpr(TipoDato.BOOLEANO, false, fleft, fright);
+        :}
+    | ID:i
+        {:
+           RESULT = new VariableExpr(i.toString(), ileft, iright);
+        :}
+    ;
