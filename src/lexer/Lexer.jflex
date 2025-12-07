@@ -29,6 +29,7 @@ DIGITO      = [0-9]
 LETRA       = [a-zA-Z_]
 IDRESTO     = [a-zA-Z0-9_]
 ESPACIO     = [ \t\r\n\f]+
+ID          = {LETRA}{IDRESTO}*
 
 CADENA      = \"([^\"\\]|\\[\"\'ntbr\\])*\"  
 CARACTER    = \'([^\'\\]|\\[\"\'ntbr\\])+\'  
@@ -58,6 +59,8 @@ COMENT_MULTI = "/*"([^*]|\*+[^/])*\*+"/"
 "%"         { return symbol(sym.MOD); }
 "^"         { return symbol(sym.POT); }
 
+
+"="        { return symbol(sym.IGUAL); }
 "=="        { return symbol(sym.IGUAL_IGUAL); }
 "!="        { return symbol(sym.DIFERENTE); }
 "<="        { return symbol(sym.MENOR_IGUAL); }
@@ -72,6 +75,12 @@ COMENT_MULTI = "/*"([^*]|\*+[^/])*\*+"/"
 "("         { return symbol(sym.PAREN_A); }
 ")"         { return symbol(sym.PAREN_C); }
 ";"         { return symbol(sym.PUNTO_COMA); }
+
+
+{ID}        { 
+                return symbol(sym.ID, yytext()); 
+            }
+
 
 {CADENA}    { 
                 String text = yytext();
