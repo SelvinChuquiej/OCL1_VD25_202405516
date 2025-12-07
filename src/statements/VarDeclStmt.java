@@ -29,24 +29,49 @@ public class VarDeclStmt extends Stmt {
         this.expresion = expresion;
     }
 
+    public VarDeclStmt(TipoDato tipo, String id, int line, int column) {
+        super(line, column);
+        this.tipo = tipo;
+        this.id = id;
+        this.expresion = null;
+    }
+
     @Override
     public Resultado ejecutar(TablaSimbolos tabla) {
-        Resultado res = expresion.evaluar(tabla);
-        if (res == null) {
-            return null;
-        }
-        if (this.tipo != res.getTipo()) {
-            Consola.print("Error Semántico: No se puede asignar un " + res.getTipo()
-                    + " a la variable '" + id + "' que es de tipo " + this.tipo
-                    + ". Línea: " + linea);
-            return null;
-        }
-        Simbolo nuevoSimbolo = new Simbolo(this.id, this.tipo, res.getValor());
-        boolean creacionExitosa = tabla.declararVariable(this.id, nuevoSimbolo);
+        Object valorFinal = null;
 
-        if (!creacionExitosa) {
-            Consola.print("Error semantico: Variable " + id + " ya existe. Linea: " + linea);
+        if (expresion != null) {
+            Resultado res = expresion.evaluar(tabla);
+            if (res == null) {
+                return null;
+            }
+
+            if (this.tipo != res.getTipo()) {
+                util.Consola.print("Error: Tipos incompatibles...");
+                return null;
+            }
+            valorFinal = res.getValor();
+        } else {
+            valorFinal = valorPorDefecto(this.tipo);
         }
+        Simbolo s = new Simbolo(this.id, this.tipo, valorFinal);
+        tabla.declararVariable(this.id, s);
+
         return null;
+    }
+
+    private Object valorPorDefecto(TipoDato tipo) {
+        switch (tipo) {
+            case ENTERO:
+                return 0;
+            case DECIMAL:
+                return 0.0;
+            case CADENA:
+                return "";
+            case BOOLEANO:
+                return false;
+            default:
+                return null;
+        }
     }
 }

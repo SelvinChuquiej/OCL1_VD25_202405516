@@ -88,9 +88,13 @@ print_stmt ::=
 
 //Declaracion
 declaracion ::=
-    VAR ID:nombre DOS_PUNTOS tipo:t IGUAL expr:e PUNTO_COMA 
+    VAR ID:nombre DOS_PUNTOS tipo:t IGUAL expr:e PUNTO_COMA
         {:
-            RESULT = new VarDeclStmt(t, nombre.toString(), e, eleft, eright);
+            RESULT = new VarDeclStmt(t, nombre.toString(), e, nombreleft, nombreright);
+        :}
+    |  VAR ID:nombre DOS_PUNTOS tipo:t PUNTO_COMA
+        {:
+            RESULT = new VarDeclStmt(t, nombre.toString(), nombreleft, nombreright);
         :}
     ;
 
