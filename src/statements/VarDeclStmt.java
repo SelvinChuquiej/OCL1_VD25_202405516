@@ -7,6 +7,7 @@ package statements;
 import AST.Expr;
 import AST.Resultado;
 import AST.Stmt;
+import errores.ManejadorErrores;
 import simbolo.Simbolo;
 import simbolo.TablaSimbolos;
 import simbolo.TipoDato;
@@ -42,13 +43,14 @@ public class VarDeclStmt extends Stmt {
 
         if (expresion != null) {
             Resultado res = expresion.evaluar(tabla);
-            if (res == null) {
-                return null;
+            if (res == null || res.getTipo() == TipoDato.ERROR) {
+                return new Resultado(TipoDato.ERROR, null);
             }
 
             if (this.tipo != res.getTipo()) {
-                util.Consola.print("Error: Tipos incompatibles...");
-                return null;
+                ManejadorErrores.agregar("Semantico", "No se puede asignar un valor de tipo "
+                        + res.getTipo() + " a la variable " + id + " de tipo " + this.tipo, linea, columna);
+                return new Resultado(TipoDato.ERROR, null);
             }
             valorFinal = res.getValor();
         } else {
@@ -70,6 +72,8 @@ public class VarDeclStmt extends Stmt {
                 return "";
             case BOOLEANO:
                 return false;
+            case CARACTER:
+                return '\0';
             default:
                 return null;
         }

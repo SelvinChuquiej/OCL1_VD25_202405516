@@ -7,6 +7,7 @@ package statements;
 import AST.Expr;
 import AST.Resultado;
 import AST.Stmt;
+import errores.ManejadorErrores;
 import simbolo.Simbolo;
 import simbolo.TablaSimbolos;
 import simbolo.TipoDato;
@@ -34,13 +35,18 @@ public class IncDecStmt extends Stmt {
     public Resultado ejecutar(TablaSimbolos tabla) {
         Simbolo sim = tabla.obtenerVariable(id);
         if (sim == null) {
-            throw new RuntimeException("Error semantico");
+            ManejadorErrores.agregar("Semantico", "La variable +" + id + " no ha sido declarada "
+                    + (op == OpIncDec.INCREMENTO ? "incremento" : "decremento"), linea, columna);
+            return new Resultado(TipoDato.ERROR, null);
         }
         Object valorActual = sim.getValor();
         TipoDato tipo = sim.getTipo();
 
         if (tipo != TipoDato.ENTERO && tipo != TipoDato.DECIMAL) {
-            throw new RuntimeException("Error semantico");
+            ManejadorErrores.agregar("Semantico", "Solo se puede aplicar "
+                    + (op == OpIncDec.INCREMENTO ? "incremento" : "decremento")
+                    + " a variables numericas", linea, columna);
+            return new Resultado(TipoDato.ERROR, null);
         }
 
         Object nuevoValor = null;

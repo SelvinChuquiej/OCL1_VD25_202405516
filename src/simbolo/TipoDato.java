@@ -9,6 +9,7 @@ package simbolo;
  * @author Selvi
  */
 public enum TipoDato {
+    ERROR,
     ENTERO,
     DECIMAL,
     BOOLEANO,

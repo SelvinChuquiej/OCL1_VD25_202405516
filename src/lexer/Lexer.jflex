@@ -2,6 +2,7 @@ package lexer;
 
 import java_cup.runtime.Symbol;
 import parser.sym;
+import errores.ManejadorErrores;
 
 %%
 %class Lexer
@@ -44,7 +45,7 @@ COMENT_MULTI = "/*"([^*]|\*+[^/])*\*+"/"
 
 "int"       { return symbol(sym.INT); }
 "double"    { return symbol(sym.DOUBLE); }
-"bool"      { return symbol(sym.BOOL); }
+"bool"      { return symbol(sym.BOOLEAN); }
 "char"      { return symbol(sym.CHAR); }
 "string"    { return symbol(sym.STRING); }
 
@@ -119,6 +120,6 @@ COMENT_MULTI = "/*"([^*]|\*+[^/])*\*+"/"
             }
 
 .              { 
-                System.err.println("Caracter no reconocido: " + yytext() +
-                                   " en línea " + (yyline+1) + ", columna " + (yycolumn+1));
+                String mensaje = "Caracter no reconocido: '" + yytext() + "'";
+                ManejadorErrores.agregar("LEXICO", mensaje, yyline + 1, yycolumn + 1);
               }

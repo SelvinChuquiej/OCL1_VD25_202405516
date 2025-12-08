@@ -6,6 +6,7 @@ package expresiones;
 
 import AST.Expr;
 import AST.Resultado;
+import errores.ManejadorErrores;
 import simbolo.TablaSimbolos;
 import simbolo.TipoDato;
 
@@ -45,7 +46,8 @@ public class OpLogicosExpr extends Expr {
 
         if (op == OpLog.NOT) {
             if (t1 != TipoDato.BOOLEANO) {
-                throw new RuntimeException("Error Semantico");
+                ManejadorErrores.agregar("Semantico", "El operador NOT solo puede aplicarse a booleanos", linea, columna);
+                return new Resultado(TipoDato.ERROR, null);
             }
             return new Resultado(TipoDato.BOOLEANO, !((boolean) v1));
         }
@@ -55,19 +57,21 @@ public class OpLogicosExpr extends Expr {
         TipoDato t2 = r2.getTipo();
 
         if (t1 != TipoDato.BOOLEANO || t2 != TipoDato.BOOLEANO) {
-            throw new RuntimeException("Error semantico");
+            ManejadorErrores.agregar("Semantico", "Los operadores logicos requieren operadores booleanos", linea, columna);
+            return new Resultado(TipoDato.ERROR, null);
         }
-        
+
         boolean b1 = (boolean) v1;
         boolean b2 = (boolean) v2;
-        
+
         switch (op) {
             case AND:
-                return new Resultado(TipoDato.BOOLEANO, b1 && b2);  
+                return new Resultado(TipoDato.BOOLEANO, b1 && b2);
             case OR:
                 return new Resultado(TipoDato.BOOLEANO, b1 || b2);
             default:
-                throw new RuntimeException("Operador Logico Desconocido");
+                ManejadorErrores.agregar("Semantico", "Operador logico desconocido " + op, linea, columna);
+                return new Resultado(TipoDato.ERROR, null);
         }
     }
 

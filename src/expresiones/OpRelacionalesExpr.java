@@ -6,6 +6,7 @@ package expresiones;
 
 import AST.Expr;
 import AST.Resultado;
+import errores.ManejadorErrores;
 import simbolo.TablaSimbolos;
 import simbolo.TipoDato;
 
@@ -51,7 +52,8 @@ public class OpRelacionalesExpr extends Expr {
                 case DIFERENTE:
                     return new Resultado(TipoDato.BOOLEANO, !s1.equals(s2));
                 default:
-                    throw new RuntimeException("No se puede comparar orden (<, >) en Cadenas");
+                    ManejadorErrores.agregar("Semantico", "No se puede aplicar el operador relacional sobre cadenas", linea, columna);
+                    return new Resultado(TipoDato.ERROR, null);
             }
         }
 
@@ -80,6 +82,9 @@ public class OpRelacionalesExpr extends Expr {
                 case MAYOR_IGUAL:
                     res = d1 >= d2;
                     break;
+                default:
+                    ManejadorErrores.agregar("Semantico", "Operador realacional desconocido", linea, columna);
+                    return new Resultado(TipoDato.ERROR, null);
             }
             return new Resultado(TipoDato.BOOLEANO, res);
         }
@@ -94,11 +99,14 @@ public class OpRelacionalesExpr extends Expr {
                     return new Resultado(TipoDato.BOOLEANO, b1 != b2);
                 default:
                     // Si intentan hacer true > false, cae aquí
-                    throw new RuntimeException("Error Semántico: No se puede comparar orden (<, >) con Booleanos");
+                    ManejadorErrores.agregar("Semantico", "No se pueden aplicar operadores de orden (<, >, <=, >=) a valores booleanos", linea, columna);
+                    return new Resultado(TipoDato.ERROR, null);
             }
         }
 
-        throw new RuntimeException("Tipos incompatibles para comparación: " + t1 + " y " + t2);
+        ManejadorErrores.agregar("Semantico", "Tipos imcompatibles para comparar", linea, columna);
+        return new Resultado(TipoDato.ERROR, null);
+
     }
 
     private boolean esNumerico(TipoDato tipo) {
@@ -114,7 +122,8 @@ public class OpRelacionalesExpr extends Expr {
             case CARACTER:
                 return (double) ((Character) valor).charValue();
             default:
-                throw new RuntimeException("Tipo no convertible a double: " + tipo);
+                ManejadorErrores.agregar("Semantico", "No se pueden convertir el tipo " + tipo + "a numero para comparar", linea, columna);
+                return 0;
         }
     }
 

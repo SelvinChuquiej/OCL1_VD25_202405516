@@ -5,6 +5,7 @@
 package UI;
 
 import AST.Stmt;
+import errores.ManejadorErrores;
 import java.io.StringReader;
 import java.util.List;
 import java_cup.runtime.Symbol;
@@ -12,6 +13,7 @@ import lexer.Lexer;
 import parser.Parser;
 import simbolo.TablaSimbolos;
 import util.Consola;
+import errores.Error;
 
 /**
  *
@@ -117,34 +119,81 @@ public class MainWindow extends javax.swing.JFrame {
 
     private void jMenuItem2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem2ActionPerformed
         // TODO add your handling code here
+        ManejadorErrores.limpiar();
         Consola.clear();
         String input = jTextArea1.getText();
         try {
             Lexer lexer = new Lexer(new StringReader(input));
-            
             Parser parser = new Parser(lexer);
-            
             Symbol resultadoCUP = parser.parse();
-            
+
+            if (ManejadorErrores.hayErrores()) {
+                mostrarErrores();
+                return;
+            }
+
             Object res = resultadoCUP.value;
-            
+
+            if (res == null) {
+                Consola.print("Error: No se pudo analizar el codigo");
+                return;
+            }
+
             if (res instanceof List) {
                 List<Object> lista = (List<Object>) res;
                 TablaSimbolos global = new TablaSimbolos();
-                
+
                 for (Object o : lista) {
-                    if(o instanceof Stmt){
+                    if (o instanceof Stmt) {
                         Stmt instruccion = (Stmt) o;
-                        instruccion.ejecutar(global);
-                    }   
+                        try {
+                            instruccion.ejecutar(global);
+                        } catch (Exception e) {
+                            ManejadorErrores.agregar("Semantico", "Error en ejeccion: " + e.getMessage(), -1, -1);
+                            Consola.print("Error en ejecucion: " + e.getMessage());
+                        }
+                    } else {
+                        Consola.print("Advertencia: Elemento ignorado (No es sentencia)");
+                    }
                 }
-                Consola.print("Ejecucion finalizada");
+
+                Consola.print("");
+                if (ManejadorErrores.hayErrores()) {
+                    Consola.print("=== EJECUCIÓN FINALIZADA CON ERRORES ===");
+                    mostrarErrores();
+                } else {
+                    Consola.print("=== EJECUCIÓN COMPLETADA EXITOSAMENTE ===");
+                    Consola.print("\nTabla de símbolos:");
+                    Consola.print(global.toString());
+                }
+            } else {
+                Consola.print("Error: Resultado inesperado");
             }
         } catch (Exception e) {
-            Consola.print("Error: " + e.getMessage());
+            ManejadorErrores.agregar("General", "Error inesperado: " + e.getMessage(), -1, -1);
+            Consola.print("Error inesperado: " + e.getMessage());
             e.printStackTrace();
+            mostrarErrores();
         }
     }//GEN-LAST:event_jMenuItem2ActionPerformed
+
+    private void mostrarErrores() {
+        ManejadorErrores.generarReporteHTML();
+
+        for (Error err : ManejadorErrores.getErrores()) {
+            Consola.print(err.toString());
+        }
+
+        Consola.print("Se ha generado el archivo 'ReporteErrores.html' con el detalle.");
+
+        try {
+            java.io.File archivo = new java.io.File("ReporteErrores.html");
+            if (archivo.exists()) {
+                java.awt.Desktop.getDesktop().open(archivo);
+            }
+        } catch (Exception e) {
+        }
+    }
 
 
     private void jMenuItem3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem3ActionPerformed

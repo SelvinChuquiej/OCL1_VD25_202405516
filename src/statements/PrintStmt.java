@@ -8,6 +8,7 @@ import AST.Stmt;
 import AST.Expr;
 import AST.Resultado;
 import simbolo.TablaSimbolos;
+import simbolo.TipoDato;
 import util.Consola;
 
 /**
@@ -18,17 +19,18 @@ public class PrintStmt extends Stmt {
 
     private Expr expresion;
 
-    public PrintStmt(Expr expresion, int line, int column) {
-        super(line, column);
+    public PrintStmt(Expr expresion, int linea, int columna) {
+        super(linea, columna);
         this.expresion = expresion;
     }
 
     @Override
     public Resultado ejecutar(TablaSimbolos tabla) {
         Resultado res = expresion.evaluar(tabla);
-        if (res != null) {
-            Consola.print(res.getValor().toString());
+        if (res.getTipo() == TipoDato.ERROR || res.getValor() == null) {
+            return null;
         }
+        Consola.print(String.valueOf(res.getValor()));
         return null;
     }
 

@@ -6,6 +6,7 @@ package expresiones;
 
 import AST.Expr;
 import AST.Resultado;
+import errores.ManejadorErrores;
 import simbolo.TablaSimbolos;
 import simbolo.TipoDato;
 import static simbolo.TipoDato.CARACTER;
@@ -33,7 +34,8 @@ public class CastExpr extends Expr {
         Object valor = res.getValor();
 
         if (!esCasteoPermitido(tipoOrigen, tipoDestino)) {
-            throw new RuntimeException("Error semantico: No se puede castear " + tipoOrigen + " a " + tipoDestino);
+            ManejadorErrores.agregar("Semantico", "No se castear de " + tipoOrigen + " a " + tipoDestino, linea, columna);
+            return new Resultado(TipoDato.ERROR, null);
         }
         return realizarCasteo(valor, tipoOrigen, tipoDestino);
 
@@ -65,7 +67,7 @@ public class CastExpr extends Expr {
                 int i = (int) valor;
                 return new Resultado(TipoDato.DECIMAL, (double) i);
             } else if (origen == TipoDato.CARACTER) {
-                char c = (char) valor;
+                char c = ((Character) valor).charValue();
                 return new Resultado(TipoDato.DECIMAL, (double) c);
             }
         }
@@ -79,47 +81,7 @@ public class CastExpr extends Expr {
             return new Resultado(TipoDato.CARACTER, (char) i);
         }
 
-        throw new RuntimeException("Casteo no implementado");
+        ManejadorErrores.agregar("Semantico", "Casteo no implementado de " + origen + " a " + destino, linea, columna);
+        return new Resultado(TipoDato.ERROR, null);
     }
-    /*try {
-
-            switch (tipoDestino) {
-                case ENTERO:
-                    if (tipoOrigen == TipoDato.DECIMAL) {
-                        double val = Double.parseDouble(valor.toString());
-                        return new Resultado(TipoDato.ENTERO, (int) val);
-                    }
-                    if (tipoOrigen == TipoDato.CARACTER) {
-                        char ch = (char) valor;
-                        return new Resultado(TipoDato.ENTERO, (int) valor);
-                    }
-                    break;
-                case DECIMAL:
-                    if (tipoOrigen == TipoDato.ENTERO) {
-                        int val = Integer.parseInt(valor.toString());
-                        return new Resultado(TipoDato.DECIMAL, (double) val);
-                    }
-                    if (tipoOrigen == TipoDato.CARACTER) {
-                        char ch = (char) valor;
-                        return new Resultado(TipoDato.DECIMAL, (double) ch);
-                    }
-                    break;
-                case CADENA:
-                    if (tipoOrigen == TipoDato.ENTERO) {
-                        return new Resultado(TipoDato.CADENA, valor.toString());
-                    }
-                    if (tipoOrigen == TipoDato.CARACTER) {
-                        return new Resultado(TipoDato.CADENA, valor.toString());
-                    }
-                    break;
-                case CARACTER:
-                    if (tipoOrigen == TipoDato.DECIMAL) {
-                        int val = Integer.parseInt(valor.toString());
-                        return new Resultado(TipoDato.CARACTER, (char) val);
-                    }
-                    break;
-            }
-        } catch (Exception e) {
-        }*/
-
 }

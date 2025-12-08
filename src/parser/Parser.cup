@@ -11,6 +11,7 @@ import simbolo.*;
 import AST.*;
 import expresiones.*;
 import statements.*;
+import errores.ManejadorErrores;
 
 parser code {:
     public Parser(Lexer lexer) {
@@ -18,16 +19,35 @@ parser code {:
     }
 
     @Override
-    public void report_error(String message, Object info) {
-        System.out.println("Error sintáctico: " + message);
+    public void syntax_error(Symbol s) {
+        String lexema = "";
+        if(s.value != null) {
+            lexema = s.value.toString();
+        } else {
+            lexema = "Token desconocido";
+        }  
+        int linea = s.left;
+        int columna = s.right;     
+        String mensaje = "Error Sintáctico: No se esperaba el componente '" + lexema + "'";   
+        ManejadorErrores.agregar("Sintáctico", mensaje, linea, columna);
     }
+
+    @Override
+    public void unrecovered_syntax_error(Symbol s) throws java.lang.Exception {
+        String lexema = (s.value != null) ? s.value.toString() : "Token desconocido";
+        int linea = s.left;
+        int columna = s.right;
+        //String mensaje = "Error Sintáctico Fatal (Irrecuperable): Se detuvo en '" + lexema + "'";     
+        ManejadorErrores.agregar("Sintáctico Fatal", mensaje, linea, columna);    
+    }
+
 :};
 
 action code {:
     // Helpers si luego los necesitas
 :};
 
-terminal INT, DOUBLE, BOOL, CHAR, STRING;
+terminal INT, DOUBLE, BOOLEAN, CHAR, STRING;
 terminal TRUE, FALSE;
 terminal PRINT;
 
@@ -39,7 +59,7 @@ terminal INCREMENTO, DECREMENTO;
 terminal PAREN_A, PAREN_C;
 terminal PUNTO_COMA, DOS_PUNTOS;
 
-terminal ENTERO, DECIMAL, BOOLEANO, CADENA, CARACTER;
+terminal ENTERO, DECIMAL, CARACTER, CADENA;
 terminal ID;
 terminal VAR;
 terminal UMENOS;
@@ -133,11 +153,11 @@ decremento ::=
     ;
 
 tipo ::=
-      INT    {: RESULT = TipoDato.ENTERO;   :}
-    | DOUBLE {: RESULT = TipoDato.DECIMAL;  :}
-    | BOOL   {: RESULT = TipoDato.BOOLEANO; :}
-    | CHAR   {: RESULT = TipoDato.CARACTER; :}
-    | STRING {: RESULT = TipoDato.CADENA;   :}
+      INT       {: RESULT = TipoDato.ENTERO;   :}
+    | DOUBLE    {: RESULT = TipoDato.DECIMAL;  :}
+    | BOOLEAN   {: RESULT = TipoDato.BOOLEANO; :}
+    | CHAR      {: RESULT = TipoDato.CARACTER; :}
+    | STRING    {: RESULT = TipoDato.CADENA;   :}
     ;
 
 expr ::=

@@ -6,6 +6,7 @@ package expresiones;
 
 import AST.Expr;
 import AST.Resultado;
+import errores.ManejadorErrores;
 import simbolo.TablaSimbolos;
 import simbolo.TipoDato;
 
@@ -25,6 +26,9 @@ public class NegacionExpr extends Expr {
     @Override
     public Resultado evaluar(TablaSimbolos tabla) {
         Resultado res = expresion.evaluar(tabla);
+        if (res.getTipo() == TipoDato.ERROR) {
+            return res;
+        }
 
         if (res.getTipo() == TipoDato.ENTERO) {
             int valor = (int) res.getValor();
@@ -34,7 +38,8 @@ public class NegacionExpr extends Expr {
             return new Resultado(TipoDato.DECIMAL, -valor);
         }
 
-        throw new RuntimeException("Error semántico: No se puede negar un " + res.getTipo());
+        ManejadorErrores.agregar("Semantico", "No se puede aplicar negacion aritmentica a un valor de tipo: " + res.getTipo(), linea, columna);
+        return new Resultado(TipoDato.ERROR, null);
     }
 
 }

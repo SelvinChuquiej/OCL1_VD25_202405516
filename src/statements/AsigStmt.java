@@ -7,8 +7,10 @@ package statements;
 import AST.Expr;
 import AST.Resultado;
 import AST.Stmt;
+import errores.ManejadorErrores;
 import simbolo.Simbolo;
 import simbolo.TablaSimbolos;
+import simbolo.TipoDato;
 import util.Consola;
 
 /**
@@ -31,19 +33,17 @@ public class AsigStmt extends Stmt {
         Simbolo simbolo = tabla.obtenerVariable(this.id);
 
         if (simbolo == null) {
-            Consola.print("Error semantico: Variable " + id + " no ha sido declarada. Linea: " + linea);
-            return null;
+            ManejadorErrores.agregar("Semantico", "La variable +" + id + " no ha sido declarada", linea, columna);
+            return new Resultado(TipoDato.ERROR, null);
         }
         Resultado res = expresion.evaluar(tabla);
-        if (res == null) {
-            return null;
+        if (res.getTipo() == TipoDato.ERROR) {
+            return res;
         }
         if (simbolo.getTipo() != res.getTipo()) {
-            Consola.print("Error Semántico: Tipos incompatibles. Intentas asignar "
-                    + res.getTipo() + " a la variable '" + id
-                    + "' que es de tipo " + simbolo.getTipo()
-                    + ". (Línea: " + linea + ")");
-            return null;
+            ManejadorErrores.agregar("Semantico", "Tipos imcompatible, no puedes asignar " + res.getTipo() + " a la variable "
+                    + id + " de tipo " + simbolo.getTipo(), linea, columna);
+            return new Resultado(TipoDato.ERROR, null);
         }
         simbolo.setValor(res.getValor());
         return null;

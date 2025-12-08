@@ -6,6 +6,7 @@ package lexer;
 
 import java_cup.runtime.Symbol;
 import parser.sym;
+import errores.ManejadorErrores;
 
 
 @SuppressWarnings("fallthrough")
@@ -781,8 +782,8 @@ public class Lexer implements java_cup.runtime.Scanner {
       else {
         switch (zzAction < 0 ? zzAction : ZZ_ACTION[zzAction]) {
           case 1:
-            { System.err.println("Caracter no reconocido: " + yytext() +
-                                   " en línea " + (yyline+1) + ", columna " + (yycolumn+1));
+            { String mensaje = "Caracter no reconocido: '" + yytext() + "'";
+                ManejadorErrores.agregar("LEXICO", mensaje, yyline + 1, yycolumn + 1);
             }
           // fall through
           case 41: break;
@@ -957,7 +958,7 @@ public class Lexer implements java_cup.runtime.Scanner {
           // fall through
           case 73: break;
           case 34:
-            { return symbol(sym.BOOL);
+            { return symbol(sym.BOOLEAN);
             }
           // fall through
           case 74: break;
