@@ -34,6 +34,7 @@ terminal PRINT;
 terminal MAS, MENOS, POR, DIV, MOD, POT;
 terminal IGUAL_IGUAL, DIFERENTE, MENOR_IGUAL, MAYOR_IGUAL, MENOR, MAYOR, IGUAL;
 terminal AND, OR, NOT, XOR;
+terminal INCREMENTO, DECREMENTO;
 
 terminal PAREN_A, PAREN_C;
 terminal PUNTO_COMA, DOS_PUNTOS;
@@ -44,7 +45,7 @@ terminal VAR;
 terminal UMENOS;
 
 non terminal List inicio, lista_sentencias;
-non terminal Stmt sentencia, print_stmt, declaracion, asignacion;
+non terminal Stmt sentencia, print_stmt, declaracion, asignacion, incremento, decremento;
 non terminal Expr expr;
 non terminal TipoDato tipo;
 
@@ -83,6 +84,8 @@ sentencia ::=
     print_stmt:p    {: RESULT = p; :} 
     | declaracion:d {: RESULT = d; :}
     | asignacion:a  {: RESULT = a; :}
+    | incremento:i  {: RESULT = i; :}
+    | decremento:dec {: RESULT = dec; :}
     ;
 
 //print
@@ -110,6 +113,22 @@ asignacion ::=
     ID:nombre IGUAL expr:e PUNTO_COMA
         {:
             RESULT = new AsigStmt (nombre.toString(), e, eleft, eright);
+        :}
+    ;
+
+//Incremento
+incremento ::=
+    ID:id INCREMENTO PUNTO_COMA
+        {:
+            RESULT = new IncDecStmt(id.toString(), IncDecStmt.OpIncDec.INCREMENTO, idleft, idright);
+        :}
+    ;
+
+//Decremento
+decremento ::=
+    ID:id DECREMENTO PUNTO_COMA
+        {:
+            RESULT = new IncDecStmt(id.toString(), IncDecStmt.OpIncDec.DECREMENTO, idleft, idright);
         :}
     ;
 

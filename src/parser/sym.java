@@ -11,40 +11,42 @@ public class sym {
   public static final int POT = 15;
   public static final int POR = 12;
   public static final int CHAR = 5;
-  public static final int ENTERO = 31;
+  public static final int ENTERO = 33;
   public static final int XOR = 26;
   public static final int DIFERENTE = 17;
   public static final int DOUBLE = 3;
-  public static final int DOS_PUNTOS = 30;
+  public static final int DOS_PUNTOS = 32;
   public static final int INT = 2;
   public static final int NOT = 25;
   public static final int AND = 23;
   public static final int IGUAL = 22;
-  public static final int CARACTER = 35;
+  public static final int CARACTER = 37;
   public static final int OR = 24;
   public static final int BOOL = 4;
   public static final int DIV = 13;
-  public static final int UMENOS = 38;
-  public static final int ID = 36;
-  public static final int PUNTO_COMA = 29;
+  public static final int INCREMENTO = 27;
+  public static final int UMENOS = 40;
+  public static final int ID = 38;
+  public static final int PUNTO_COMA = 31;
   public static final int IGUAL_IGUAL = 16;
   public static final int EOF = 0;
-  public static final int DECIMAL = 32;
+  public static final int DECIMAL = 34;
   public static final int TRUE = 7;
+  public static final int DECREMENTO = 28;
   public static final int error = 1;
-  public static final int CADENA = 34;
+  public static final int CADENA = 36;
   public static final int MENOS = 11;
   public static final int MENOR = 20;
   public static final int MOD = 14;
   public static final int MAYOR = 21;
   public static final int MAYOR_IGUAL = 19;
-  public static final int BOOLEANO = 33;
+  public static final int BOOLEANO = 35;
   public static final int STRING = 6;
-  public static final int PAREN_C = 28;
-  public static final int PAREN_A = 27;
+  public static final int PAREN_C = 30;
+  public static final int PAREN_A = 29;
   public static final int MENOR_IGUAL = 18;
   public static final int FALSE = 8;
-  public static final int VAR = 37;
+  public static final int VAR = 39;
   public static final int PRINT = 9;
   public static final int MAS = 10;
   public static final String[] terminalNames = new String[] {
@@ -75,6 +77,8 @@ public class sym {
   "OR",
   "NOT",
   "XOR",
+  "INCREMENTO",
+  "DECREMENTO",
   "PAREN_A",
   "PAREN_C",
   "PUNTO_COMA",

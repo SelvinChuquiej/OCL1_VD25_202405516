@@ -77,6 +77,9 @@ COMENT_MULTI = "/*"([^*]|\*+[^/])*\*+"/"
 ";"         { return symbol(sym.PUNTO_COMA); }
 ":"         { return symbol(sym.DOS_PUNTOS); }
 
+"++"         { return symbol(sym.INCREMENTO); }
+"--"         { return symbol(sym.DECREMENTO); }
+
 "var"         { return symbol(sym.VAR); }
 
 
