@@ -123,27 +123,27 @@ expr ::=
 //Resta
     | expr:e1 MENOS expr:e2
         {:
-           RESULT = new OpAritmeticosExpr(e1, e2, OpAritmeticosExpr.OpBin.MENOS, 0, 0);
+           RESULT = new OpAritmeticosExpr(e1, e2, OpAritmeticosExpr.OpBin.MENOS, e1left, e2right);
         :}
 //Multiplicacion
     | expr:e1 POR expr:e2
         {:
-           RESULT = new OpAritmeticosExpr(e1, e2, OpAritmeticosExpr.OpBin.POR, 0, 0);
+           RESULT = new OpAritmeticosExpr(e1, e2, OpAritmeticosExpr.OpBin.POR, e1left, e2right);
         :}
 //Division
     | expr:e1 DIV expr:e2
         {:
-           RESULT = new OpAritmeticosExpr(e1, e2, OpAritmeticosExpr.OpBin.DIV, 0, 0);
+           RESULT = new OpAritmeticosExpr(e1, e2, OpAritmeticosExpr.OpBin.DIV, e1left, e2right);
         :}
 //Porcentaje
     | expr:e1 MOD expr:e2
         {:
-           RESULT = new OpAritmeticosExpr(e1, e2, OpAritmeticosExpr.OpBin.MOD, 0, 0);
+           RESULT = new OpAritmeticosExpr(e1, e2, OpAritmeticosExpr.OpBin.MOD, e1left, e2right);
         :}
 //Potencia
     | expr:e1 POT expr:e2
         {:
-           RESULT = new OpAritmeticosExpr(e1, e2, OpAritmeticosExpr.OpBin.POT, 0, 0);
+           RESULT = new OpAritmeticosExpr(e1, e2, OpAritmeticosExpr.OpBin.POT, e1left, e2right);
         :}
 //Agrupacion
     | PAREN_A expr:e PAREN_C
