@@ -57,7 +57,7 @@ COMENT_MULTI = "/*"([^*]|\*+[^/])*\*+"/"
 "*"         { return symbol(sym.POR); }
 "/"         { return symbol(sym.DIV); }
 "%"         { return symbol(sym.MOD); }
-"^"         { return symbol(sym.POT); }
+"**"         { return symbol(sym.POT); }
 
 
 "="        { return symbol(sym.IGUAL); }
