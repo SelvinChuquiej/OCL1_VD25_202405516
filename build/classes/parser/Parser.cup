@@ -33,7 +33,7 @@ terminal PRINT;
 
 terminal MAS, MENOS, POR, DIV, MOD, POT;
 terminal IGUAL_IGUAL, DIFERENTE, MENOR_IGUAL, MAYOR_IGUAL, MENOR, MAYOR, IGUAL;
-terminal AND, OR, NOT;
+terminal AND, OR, NOT, XOR;
 
 terminal PAREN_A, PAREN_C;
 terminal PUNTO_COMA, DOS_PUNTOS;
@@ -48,15 +48,15 @@ non terminal Stmt sentencia, print_stmt, declaracion, asignacion;
 non terminal Expr expr;
 non terminal TipoDato tipo;
 
-precedence right UMENOS;
-precedence nonassoc POT;
-precedence left POR, DIV, MOD;
-precedence left MAS, MENOS;
+precedence left OR;
+precedence left AND;
+precedence left XOR;
+precedence right NOT;
 precedence left IGUAL_IGUAL, DIFERENTE, MENOR, MENOR_IGUAL, MAYOR, MAYOR_IGUAL;
-precedence right NOT
-precedence left XOR
-precedence left AND
-precedence left OR
+precedence left MAS, MENOS;
+precedence left POR, DIV, MOD;
+precedence nonassoc POT;
+precedence right UMENOS;
 
 start with inicio;
 
@@ -186,6 +186,21 @@ expr ::=
     | expr:e1 MAYOR_IGUAL expr:e2 
         {:
             RESULT = new OpRelacionalesExpr(e1, e2, OpRelacionalesExpr.OpRel.MAYOR_IGUAL, e1left, e2right);
+        :}
+//AND
+    | expr:e1 AND expr:e2 
+        {:
+            RESULT = new OpLogicosExpr(e1, e2, OpLogicosExpr.OpLog.AND, e1left, e2right);
+        :}
+//OR
+    | expr:e1 OR expr:e2 
+        {:
+            RESULT = new OpLogicosExpr(e1, e2, OpLogicosExpr.OpLog.OR, e1left, e2right);
+        :}
+//NOT
+    | NOT expr:e1
+        {:
+            RESULT = new OpLogicosExpr(e1, OpLogicosExpr.OpLog.NOT, e1left, e1right);
         :}
     | ENTERO:n
         {:
