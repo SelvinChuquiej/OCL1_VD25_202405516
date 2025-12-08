@@ -44,7 +44,7 @@ terminal VAR;
 
 non terminal List inicio, lista_sentencias;
 non terminal Stmt sentencia, print_stmt, declaracion, asignacion;
-non terminal Expr expr;
+non terminal Expr expr, casteo;
 non terminal TipoDato tipo;
 
 precedence right POT;
@@ -114,32 +114,38 @@ tipo ::=
     | STRING {: RESULT = TipoDato.CADENA;   :}
     ;
 
-
 expr ::=
+//Suma
       expr:e1 MAS expr:e2
         {:
            RESULT = new OpAritmeticosExpr(e1, e2, OpAritmeticosExpr.OpBin.MAS, e1left, e2right);
         :}
+//Resta
     | expr:e1 MENOS expr:e2
         {:
            RESULT = new OpAritmeticosExpr(e1, e2, OpAritmeticosExpr.OpBin.MENOS, 0, 0);
         :}
+//Multiplicacion
     | expr:e1 POR expr:e2
         {:
            RESULT = new OpAritmeticosExpr(e1, e2, OpAritmeticosExpr.OpBin.POR, 0, 0);
         :}
+//Division
     | expr:e1 DIV expr:e2
         {:
            RESULT = new OpAritmeticosExpr(e1, e2, OpAritmeticosExpr.OpBin.DIV, 0, 0);
         :}
+//Porcentaje
     | expr:e1 MOD expr:e2
         {:
            RESULT = new OpAritmeticosExpr(e1, e2, OpAritmeticosExpr.OpBin.MOD, 0, 0);
         :}
+//Potencia
     | expr:e1 POT expr:e2
         {:
            RESULT = new OpAritmeticosExpr(e1, e2, OpAritmeticosExpr.OpBin.POT, 0, 0);
         :}
+//Agrupacion
     | PAREN_A expr:e PAREN_C
         {:
            RESULT = e;
@@ -174,5 +180,10 @@ expr ::=
     | ID:i
         {:
            RESULT = new VariableExpr(i.toString(), ileft, iright);
+        :}
+//Casteo
+    | PAREN_A tipo:t PAREN_C expr:e
+        {:
+            RESULT = new CastExpr (t, e, eleft, eright);
         :}
     ;
