@@ -88,6 +88,12 @@ COMENT_MULTI = "/*"([^*]|\*+[^/])*\*+"/"
 {CADENA}    { 
                 String text = yytext();
                 text = text.substring(1, text.length() - 1);
+                text = text.replace("\\n", "\n"); 
+                text = text.replace("\\t", "\t");   
+                text = text.replace("\\r", "\r");   
+                text = text.replace("\\\"", "\"");  
+                text = text.replace("\\'", "'");    
+                text = text.replace("\\\\", "\\"); 
                 return symbol(sym.CADENA, text);
             }
 
