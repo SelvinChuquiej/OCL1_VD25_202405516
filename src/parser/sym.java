@@ -23,6 +23,7 @@ public class sym {
   public static final int OR = 24;
   public static final int BOOL = 4;
   public static final int DIV = 13;
+  public static final int UMENOS = 37;
   public static final int ID = 35;
   public static final int PUNTO_COMA = 28;
   public static final int IGUAL_IGUAL = 16;
@@ -82,7 +83,8 @@ public class sym {
   "CADENA",
   "CARACTER",
   "ID",
-  "VAR"
+  "VAR",
+  "UMENOS"
   };
 }
 

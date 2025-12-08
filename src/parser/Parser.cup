@@ -41,15 +41,17 @@ terminal PUNTO_COMA, DOS_PUNTOS;
 terminal ENTERO, DECIMAL, BOOLEANO, CADENA, CARACTER;
 terminal ID;
 terminal VAR;
+terminal UMENOS;
 
 non terminal List inicio, lista_sentencias;
 non terminal Stmt sentencia, print_stmt, declaracion, asignacion;
-non terminal Expr expr, casteo;
+non terminal Expr expr;
 non terminal TipoDato tipo;
 
 precedence right POT;
 precedence left POR, DIV, MOD;
 precedence left MAS, MENOS;
+precedence right UMENOS;
 
 start with inicio;
 
@@ -185,5 +187,10 @@ expr ::=
     | PAREN_A tipo:t PAREN_C expr:e
         {:
             RESULT = new CastExpr (t, e, eleft, eright);
-        :}
+        :} %prec UMENOS
+//Negacion
+    | MENOS expr:e 
+        {:
+            RESULT = new NegacionExpr (e, eleft, eright);
+        :} %prec UMENOS
     ;
