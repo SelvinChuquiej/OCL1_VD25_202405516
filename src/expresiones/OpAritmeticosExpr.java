@@ -40,17 +40,31 @@ public class OpAritmeticosExpr extends Expr {
 
         switch (op) {
             case MAS:
+                //Cualquier cosa + String
+                if (r1.getTipo() == TipoDato.CADENA || r2.getTipo() == TipoDato.CADENA) {
+                    String result = v1.toString() + v2.toString();
+                    return new Resultado(TipoDato.CADENA, result);
+                }
                 //int + int
                 if (r1.getTipo() == TipoDato.ENTERO && r2.getTipo() == TipoDato.ENTERO) {
-                    int a = Integer.parseInt(v1.toString());
-                    int b = Integer.parseInt(v2.toString());
+                    int a = (int) v1;
+                    int b = (int) v2;
                     return new Resultado(TipoDato.ENTERO, a + b);
                 }
                 //int + decimal || decimal + int
                 if ((r1.getTipo() == TipoDato.ENTERO && r2.getTipo() == TipoDato.DECIMAL)
                         || (r1.getTipo() == TipoDato.DECIMAL && r2.getTipo() == TipoDato.ENTERO)) {
-                    double a = Double.parseDouble(v1.toString());
-                    double b = Double.parseDouble(v2.toString());
+                    double a, b;
+                    if (r1.getTipo() == TipoDato.ENTERO) {
+                        a = ((Integer) v1).doubleValue();
+                    } else {
+                        a = (Double) v1;
+                    }
+                    if (r2.getTipo() == TipoDato.ENTERO) {
+                        b = ((Integer) v2).doubleValue();
+                    } else {
+                        b = (Double) v2;
+                    }
                     return new Resultado(TipoDato.DECIMAL, a + b);
                 }
                 //int + char || char + int
@@ -58,24 +72,18 @@ public class OpAritmeticosExpr extends Expr {
                         || (r1.getTipo() == TipoDato.CARACTER && r2.getTipo() == TipoDato.ENTERO)) {
                     int a, b;
                     if (r1.getTipo() == TipoDato.ENTERO) {
-                        a = Integer.parseInt(v1.toString());
-                        b = v2.toString().charAt(0);
+                        a = (int) v1;
+                        b = (int) ((Character) v2).charValue();
                     } else {
-                        a = v1.toString().charAt(0);
-                        b = Integer.parseInt(v2.toString());
+                        a = (int) ((Character) v1).charValue();
+                        b = (int) v2;
                     }
                     return new Resultado(TipoDato.ENTERO, a + b);
                 }
-                //int + string || string + int
-                if ((r1.getTipo() == TipoDato.ENTERO && r2.getTipo() == TipoDato.CADENA)
-                        || (r1.getTipo() == TipoDato.CADENA && r2.getTipo() == TipoDato.ENTERO)) {
-                    String result = v1.toString() + v2.toString();
-                    return new Resultado(TipoDato.CADENA, result);
-                }
                 //decimal + decimal
                 if (r1.getTipo() == TipoDato.DECIMAL && r2.getTipo() == TipoDato.DECIMAL) {
-                    double a = Double.parseDouble(r1.getValor().toString());
-                    double b = Double.parseDouble(r2.getValor().toString());
+                    double a = (double) v1;
+                    double b = (double) v2;
                     return new Resultado(TipoDato.DECIMAL, a + b);
                 }
                 //decimal + char || char + decimal
@@ -83,112 +91,92 @@ public class OpAritmeticosExpr extends Expr {
                         || (r1.getTipo() == TipoDato.CARACTER && r2.getTipo() == TipoDato.DECIMAL)) {
                     double a, b;
                     if (r1.getTipo() == TipoDato.DECIMAL) {
-                        a = Double.parseDouble(v1.toString());
+                        a = (double) v1;
                     } else {
                         char c = v1.toString().charAt(0);
                         a = c;
                     }
                     if (r2.getTipo() == TipoDato.DECIMAL) {
-                        b = Double.parseDouble(v2.toString());
+                        b = (double) v2;
                     } else {
                         char c = v2.toString().charAt(0);
                         b = c;
                     }
                     return new Resultado(TipoDato.DECIMAL, a + b);
                 }
-                //decimal + string || string + decimal
-                if ((r1.getTipo() == TipoDato.DECIMAL && r2.getTipo() == TipoDato.CADENA)
-                        || (r1.getTipo() == TipoDato.CADENA && r2.getTipo() == TipoDato.DECIMAL)) {
-                    String result = v1.toString() + v2.toString();
-                    return new Resultado(TipoDato.CADENA, result);
-                }
-                //booleano + string || string + booleano
-                if ((r1.getTipo() == TipoDato.BOOLEANO && r2.getTipo() == TipoDato.CADENA)
-                        || (r1.getTipo() == TipoDato.CADENA && r2.getTipo() == TipoDato.BOOLEANO)) {
-                    String result = v1.toString() + v2.toString();
-                    return new Resultado(TipoDato.CADENA, result);
-                }
                 //char + char
                 if (r1.getTipo() == TipoDato.CARACTER && r2.getTipo() == TipoDato.CARACTER) {
                     String result = v1.toString() + v2.toString();
                     return new Resultado(TipoDato.CADENA, result);
                 }
-                //char + string || string + char
-                if ((r1.getTipo() == TipoDato.CARACTER && r2.getTipo() == TipoDato.CADENA)
-                        || (r1.getTipo() == TipoDato.CADENA && r2.getTipo() == TipoDato.CARACTER)) {
-                    String result = v1.toString() + v2.toString();
-                    return new Resultado(TipoDato.CADENA, result);
-                }
-                //string + string
-                if (r1.getTipo() == TipoDato.CADENA && r2.getTipo() == TipoDato.CADENA) {
-                    String result = v1.toString() + v2.toString();
-                    return new Resultado(TipoDato.CADENA, result);
-                }
                 break;
+
             case MENOS:
                 //int - int 
                 if (r1.getTipo() == TipoDato.ENTERO && r2.getTipo() == TipoDato.ENTERO) {
-                    int a = Integer.parseInt(v1.toString());
-                    int b = Integer.parseInt(v2.toString());
+                    int a = (int) v1;
+                    int b = (int) v2;
                     return new Resultado(TipoDato.ENTERO, a - b);
                 }
-                //int + decimal || decimal + int
-                if ((r1.getTipo() == TipoDato.ENTERO && r2.getTipo() == TipoDato.DECIMAL)
-                        || (r1.getTipo() == TipoDato.DECIMAL && r2.getTipo() == TipoDato.ENTERO)) {
-                    double a = Double.parseDouble(v1.toString());
-                    double b = Double.parseDouble(v2.toString());
-                    return new Resultado(TipoDato.DECIMAL, a - b);
+                //Decimal - Cualquier cosa (int, decimal, char)
+                if (r1.getTipo() == TipoDato.DECIMAL || r2.getTipo() == TipoDato.DECIMAL) {
+                    double a, b;
+
+                    if (r1.getTipo() == TipoDato.ENTERO) {
+                        a = ((Integer) v1).doubleValue();
+                    } else if (r1.getTipo() == TipoDato.DECIMAL) {
+                        a = (double) v1;
+                    } else {
+                        a = (double) ((Character) v1).charValue();
+                    }
+                    if (r2.getTipo() == TipoDato.ENTERO) {
+                        b = ((Integer) v2).doubleValue();
+                    } else if (r1.getTipo() == TipoDato.DECIMAL) {
+                        b = (double) v2;
+                    } else {
+                        b = (double) ((Character) v2).charValue();
+                    }
+                    return new Resultado(TipoDato.DECIMAL, a + b);
                 }
                 //int - char || char - int
                 if ((r1.getTipo() == TipoDato.ENTERO && r2.getTipo() == TipoDato.CARACTER)
                         || (r1.getTipo() == TipoDato.CARACTER && r2.getTipo() == TipoDato.ENTERO)) {
                     int a, b;
                     if (r1.getTipo() == TipoDato.ENTERO) {
-                        a = Integer.parseInt(v1.toString());
-                        b = v2.toString().charAt(0);
+                        a = (int) v1;
+                        b = (int) ((Character) v2).charValue();
                     } else {
-                        a = v1.toString().charAt(0);
-                        b = Integer.parseInt(v2.toString());
+                        a = (int) ((Character) v1).charValue();
+                        b = (int) v2;
                     }
                     return new Resultado(TipoDato.ENTERO, a - b);
                 }
-                //decimal - decimal
-                if (r1.getTipo() == TipoDato.DECIMAL && r2.getTipo() == TipoDato.DECIMAL) {
-                    double a = Double.parseDouble(r1.getValor().toString());
-                    double b = Double.parseDouble(r2.getValor().toString());
-                    return new Resultado(TipoDato.DECIMAL, a - b);
-                }
-                //decimal - char || char - decimal
-                if ((r1.getTipo() == TipoDato.DECIMAL && r2.getTipo() == TipoDato.CARACTER)
-                        || (r1.getTipo() == TipoDato.CARACTER && r2.getTipo() == TipoDato.DECIMAL)) {
-                    double a, b;
-                    if (r1.getTipo() == TipoDato.DECIMAL) {
-                        a = Double.parseDouble(v1.toString());
-                    } else {
-                        char c = v1.toString().charAt(0);
-                        a = c;
-                    }
-                    if (r2.getTipo() == TipoDato.DECIMAL) {
-                        b = Double.parseDouble(v1.toString());
-                    } else {
-                        char c = v2.toString().charAt(0);
-                        b = c;
-                    }
-                    return new Resultado(TipoDato.DECIMAL, a - b);
-                }
                 break;
+
             case POR:
                 //int ** int 
                 if (r1.getTipo() == TipoDato.ENTERO && r2.getTipo() == TipoDato.ENTERO) {
-                    int a = Integer.parseInt(v1.toString());
-                    int b = Integer.parseInt(v2.toString());
+                    int a = (int) v1;
+                    int b = (int) v2;
                     return new Resultado(TipoDato.ENTERO, a * b);
                 }
-                //int ** decimal || decimal ** int
-                if ((r1.getTipo() == TipoDato.ENTERO && r2.getTipo() == TipoDato.DECIMAL)
-                        || (r1.getTipo() == TipoDato.DECIMAL && r2.getTipo() == TipoDato.ENTERO)) {
-                    double a = Double.parseDouble(v1.toString());
-                    double b = Double.parseDouble(v2.toString());
+                //Decimal ** Cualquier cosa (int, decimal, char)
+                if (r1.getTipo() == TipoDato.DECIMAL || r2.getTipo() == TipoDato.DECIMAL) {
+                    double a, b;
+                    if (r1.getTipo() == TipoDato.ENTERO) {
+                        a = ((Integer) v1).doubleValue();
+                    } else if (r1.getTipo() == TipoDato.DECIMAL) {
+                        a = (double) v1;
+                    } else {
+                        a = (double) ((Character) v1).charValue();
+                    }
+                    if (r2.getTipo() == TipoDato.ENTERO) {
+                        b = ((Integer) v2).doubleValue();
+                    } else if (r2.getTipo() == TipoDato.DECIMAL) {
+                        b = (double) v2;
+                    } else {
+                        b = (double) ((Character) v2).charValue();
+                    }
                     return new Resultado(TipoDato.DECIMAL, a * b);
                 }
                 //int ** char || char ** int
@@ -196,120 +184,90 @@ public class OpAritmeticosExpr extends Expr {
                         || (r1.getTipo() == TipoDato.CARACTER && r2.getTipo() == TipoDato.ENTERO)) {
                     int a, b;
                     if (r1.getTipo() == TipoDato.ENTERO) {
-                        a = Integer.parseInt(v1.toString());
-                        b = v2.toString().charAt(0);
+                        a = (int) v1;
+                        b = (int) ((Character) v2).charValue();
                     } else {
-                        a = v1.toString().charAt(0);
-                        b = Integer.parseInt(v2.toString());
+                        a = (int) ((Character) v1).charValue();
+                        b = (int) v2;
                     }
                     return new Resultado(TipoDato.ENTERO, a * b);
                 }
-                //decimal ** decimal
-                if (r1.getTipo() == TipoDato.DECIMAL && r2.getTipo() == TipoDato.DECIMAL) {
-                    double a = Double.parseDouble(r1.getValor().toString());
-                    double b = Double.parseDouble(r2.getValor().toString());
-                    return new Resultado(TipoDato.DECIMAL, a * b);
-                }
-                //decimal ** char || char ** decimal
-                if ((r1.getTipo() == TipoDato.DECIMAL && r2.getTipo() == TipoDato.CARACTER)
-                        || (r1.getTipo() == TipoDato.CARACTER && r2.getTipo() == TipoDato.DECIMAL)) {
-                    double a, b;
-                    if (r1.getTipo() == TipoDato.DECIMAL) {
-                        a = Double.parseDouble(v1.toString());
-                    } else {
-                        char c = v1.toString().charAt(0);
-                        a = c;
-                    }
-                    if (r2.getTipo() == TipoDato.DECIMAL) {
-                        b = Double.parseDouble(v1.toString());
-                    } else {
-                        char c = v2.toString().charAt(0);
-                        b = c;
-                    }
-                    return new Resultado(TipoDato.DECIMAL, a * b);
-                }
                 break;
+
             case DIV:
-                //int / int 
-                if (r1.getTipo() == TipoDato.ENTERO && r2.getTipo() == TipoDato.ENTERO) {
-                    double a = Double.parseDouble(v1.toString());
-                    double b = Double.parseDouble(v2.toString());
-                    return new Resultado(TipoDato.DECIMAL, a / b);
-                }
-                //int / decimal || decimal / int
-                if ((r1.getTipo() == TipoDato.ENTERO && r2.getTipo() == TipoDato.DECIMAL)
-                        || (r1.getTipo() == TipoDato.DECIMAL && r2.getTipo() == TipoDato.ENTERO)) {
-                    double a = Double.parseDouble(v1.toString());
-                    double b = Double.parseDouble(v2.toString());
-                    return new Resultado(TipoDato.DECIMAL, a / b);
-                }
-                //int / char || char / int
-                if ((r1.getTipo() == TipoDato.ENTERO && r2.getTipo() == TipoDato.CARACTER)
-                        || (r1.getTipo() == TipoDato.CARACTER && r2.getTipo() == TipoDato.ENTERO)) {
-                    int a, b;
-                    if (r1.getTipo() == TipoDato.ENTERO) {
-                        a = Integer.parseInt(v1.toString());
-                        b = v2.toString().charAt(0);
-                    } else {
-                        a = v1.toString().charAt(0);
-                        b = Integer.parseInt(v2.toString());
-                    }
-                    return new Resultado(TipoDato.DECIMAL, a / b);
-                }
-                //decimal / decimal
-                if (r1.getTipo() == TipoDato.DECIMAL && r2.getTipo() == TipoDato.DECIMAL) {
-                    double a = Double.parseDouble(r1.getValor().toString());
-                    double b = Double.parseDouble(r2.getValor().toString());
-                    return new Resultado(TipoDato.DECIMAL, a / b);
-                }
-                //decimal / char || char / decimal
-                if ((r1.getTipo() == TipoDato.DECIMAL && r2.getTipo() == TipoDato.CARACTER)
-                        || (r1.getTipo() == TipoDato.CARACTER && r2.getTipo() == TipoDato.DECIMAL)) {
+                boolean t1EsNumDIV = (r1.getTipo() == TipoDato.ENTERO || r1.getTipo() == TipoDato.DECIMAL || r1.getTipo() == TipoDato.CARACTER);
+                boolean t2EsNumDIV = (r2.getTipo() == TipoDato.ENTERO || r2.getTipo() == TipoDato.DECIMAL || r2.getTipo() == TipoDato.CARACTER);
+                if (t1EsNumDIV && t2EsNumDIV) {
                     double a, b;
-                    if (r1.getTipo() == TipoDato.DECIMAL) {
-                        a = Double.parseDouble(v1.toString());
+
+                    if (r1.getTipo() == TipoDato.ENTERO) {
+                        a = ((Integer) v1).doubleValue();
+                    } else if (r1.getTipo() == TipoDato.DECIMAL) {
+                        a = (double) v1;
                     } else {
-                        char c = v1.toString().charAt(0);
-                        a = c;
+                        a = (double) ((Character) v1).charValue();
                     }
-                    if (r2.getTipo() == TipoDato.DECIMAL) {
-                        b = Double.parseDouble(v1.toString());
+                    if (r2.getTipo() == TipoDato.ENTERO) {
+                        b = ((Integer) v2).doubleValue();
+                    } else if (r2.getTipo() == TipoDato.DECIMAL) {
+                        b = (double) v2;
                     } else {
-                        char c = v2.toString().charAt(0);
-                        b = c;
+                        b = (double) ((Character) v2).charValue();
+                    }
+                    if (b == 0.0) {
+                        throw new RuntimeException("Error en ejecucion: Division por cero");
                     }
                     return new Resultado(TipoDato.DECIMAL, a / b);
                 }
                 break;
+
             case POT:
                 //int ** int 
                 if (r1.getTipo() == TipoDato.ENTERO && r2.getTipo() == TipoDato.ENTERO) {
-                    int a = Integer.parseInt(v1.toString());
-                    int b = Integer.parseInt(v2.toString());
+                    int a = (int) v1;
+                    int b = (int) v2;
                     return new Resultado(TipoDato.ENTERO, (int) Math.pow(a, b));
                 }
-                //int ** decimal || decimal ** int
-                if ((r1.getTipo() == TipoDato.ENTERO && r2.getTipo() == TipoDato.DECIMAL)
-                        || (r1.getTipo() == TipoDato.DECIMAL && r2.getTipo() == TipoDato.ENTERO)) {
-                    double a = Double.parseDouble(v1.toString());
-                    double b = Double.parseDouble(v2.toString());
-                    return new Resultado(TipoDato.DECIMAL, Math.pow(a, b));
+                //Decimal ** CualquierCosa(decimal, int)
+                boolean t1EsNumPOT = (r1.getTipo() == TipoDato.ENTERO || r1.getTipo() == TipoDato.DECIMAL);
+                boolean t2EsNumPOT = (r2.getTipo() == TipoDato.ENTERO || r2.getTipo() == TipoDato.DECIMAL);
+                if (t1EsNumPOT && t2EsNumPOT) {
+                    double a, b;
+                    if (r1.getTipo() == TipoDato.ENTERO) {
+                        a = ((Integer) v1).doubleValue();
+                    } else {
+                        a = (double) v1;
+                    }
+                    if (r2.getTipo() == TipoDato.ENTERO) {
+                        b = ((Integer) v2).doubleValue();
+                    } else {
+                        b = (double) v2;
+                    }
+                    return new Resultado(TipoDato.DECIMAL, a % b);
                 }
                 break;
+
             case MOD:
-                //int % int 
-                if (r1.getTipo() == TipoDato.ENTERO && r2.getTipo() == TipoDato.ENTERO) {
-                    double a = Double.parseDouble(v1.toString());
-                    double b = Double.parseDouble(v2.toString());
+                boolean t1EsNumMOD = (r1.getTipo() == TipoDato.ENTERO || r1.getTipo() == TipoDato.DECIMAL);
+                boolean t2EsNumMOD = (r2.getTipo() == TipoDato.ENTERO || r2.getTipo() == TipoDato.DECIMAL);
+                if (t1EsNumMOD && t2EsNumMOD) {
+                    double a, b;
+                    if (r1.getTipo() == TipoDato.ENTERO) {
+                        a = ((Integer) v1).doubleValue();
+                    } else {
+                        a = (double) v1;
+                    }
+                    if (r2.getTipo() == TipoDato.ENTERO) {
+                        b = ((Integer) v2).doubleValue();
+                    } else {
+                        b = (double) v2;
+                    }
+                    if (b == 0.0) {
+                        throw new RuntimeException("Error en ejecucion: Modulo por cero");
+                    }
                     return new Resultado(TipoDato.DECIMAL, a % b);
                 }
-                //int % decimal || decimal % int
-                if ((r1.getTipo() == TipoDato.ENTERO && r2.getTipo() == TipoDato.DECIMAL)
-                        || (r1.getTipo() == TipoDato.DECIMAL && r2.getTipo() == TipoDato.ENTERO)) {
-                    double a = Double.parseDouble(v1.toString());
-                    double b = Double.parseDouble(v2.toString());
-                    return new Resultado(TipoDato.DECIMAL, a % b);
-                }
+                break;
         }
         return new Resultado(null, null);
     }

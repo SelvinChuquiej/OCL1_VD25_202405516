@@ -48,10 +48,15 @@ non terminal Stmt sentencia, print_stmt, declaracion, asignacion;
 non terminal Expr expr;
 non terminal TipoDato tipo;
 
-precedence right POT;
+precedence right UMENOS;
+precedence nonassoc POT;
 precedence left POR, DIV, MOD;
 precedence left MAS, MENOS;
-precedence right UMENOS;
+precedence left IGUAL_IGUAL, DIFERENTE, MENOR, MENOR_IGUAL, MAYOR, MAYOR_IGUAL;
+precedence right NOT
+precedence left XOR
+precedence left AND
+precedence left OR
 
 start with inicio;
 
@@ -151,6 +156,36 @@ expr ::=
     | PAREN_A expr:e PAREN_C
         {:
            RESULT = e;
+        :}
+//Igualacion
+    | expr:e1 IGUAL_IGUAL expr:e2 
+        {:
+            RESULT = new OpRelacionalesExpr(e1, e2, OpRelacionalesExpr.OpRel.IGUAL_IGUAL, e1left, e2right);
+        :}
+//Diferenciacion
+    | expr:e1 DIFERENTE expr:e2 
+        {:
+            RESULT = new OpRelacionalesExpr(e1, e2, OpRelacionalesExpr.OpRel.DIFERENTE, e1left, e2right);
+        :}
+//Menor Que
+    | expr:e1 MENOR expr:e2 
+        {:
+            RESULT = new OpRelacionalesExpr(e1, e2, OpRelacionalesExpr.OpRel.MENOR, e1left, e2right);
+        :}
+//Menor Igual Que
+    | expr:e1 MENOR_IGUAL expr:e2 
+        {:
+            RESULT = new OpRelacionalesExpr(e1, e2, OpRelacionalesExpr.OpRel.MENOR_IGUAL, e1left, e2right);
+        :}
+//Mayor Que
+    | expr:e1 MAYOR expr:e2 
+        {:
+            RESULT = new OpRelacionalesExpr(e1, e2, OpRelacionalesExpr.OpRel.MAYOR, e1left, e2right);
+        :}
+//Mayor Igual Que
+    | expr:e1 MAYOR_IGUAL expr:e2 
+        {:
+            RESULT = new OpRelacionalesExpr(e1, e2, OpRelacionalesExpr.OpRel.MAYOR_IGUAL, e1left, e2right);
         :}
     | ENTERO:n
         {:
