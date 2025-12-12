@@ -132,12 +132,12 @@ public class OpAritmeticosExpr extends Expr {
                     }
                     if (r2.getTipo() == TipoDato.ENTERO) {
                         b = ((Integer) v2).doubleValue();
-                    } else if (r1.getTipo() == TipoDato.DECIMAL) {
+                    } else if (r2.getTipo() == TipoDato.DECIMAL) {
                         b = (double) v2;
                     } else {
                         b = (double) ((Character) v2).charValue();
                     }
-                    return new Resultado(TipoDato.DECIMAL, a + b);
+                    return new Resultado(TipoDato.DECIMAL, a - b);
                 }
                 //int - char || char - int
                 if ((r1.getTipo() == TipoDato.ENTERO && r2.getTipo() == TipoDato.CARACTER)
@@ -155,32 +155,32 @@ public class OpAritmeticosExpr extends Expr {
                 ManejadorErrores.agregar("Semantico", "No se puede restar " + r1.getTipo() + " con " + r2.getTipo(), linea, columna);
                 return new Resultado(TipoDato.ERROR, null);
             case POR:
-                //int ** int 
+                //int * int 
                 if (r1.getTipo() == TipoDato.ENTERO && r2.getTipo() == TipoDato.ENTERO) {
                     int a = (int) v1;
                     int b = (int) v2;
                     return new Resultado(TipoDato.ENTERO, a * b);
                 }
-                //Decimal ** Cualquier cosa (int, decimal, char)
+                //Decimal * Cualquier cosa (int, decimal, char)
                 if (r1.getTipo() == TipoDato.DECIMAL || r2.getTipo() == TipoDato.DECIMAL) {
                     double a, b;
                     if (r1.getTipo() == TipoDato.ENTERO) {
                         a = ((Integer) v1).doubleValue();
                     } else if (r1.getTipo() == TipoDato.DECIMAL) {
-                        a = (double) v1;
+                        a = ((Double) v1).doubleValue();
                     } else {
                         a = (double) ((Character) v1).charValue();
                     }
                     if (r2.getTipo() == TipoDato.ENTERO) {
                         b = ((Integer) v2).doubleValue();
                     } else if (r2.getTipo() == TipoDato.DECIMAL) {
-                        b = (double) v2;
+                        b = ((Double) v2).doubleValue();
                     } else {
                         b = (double) ((Character) v2).charValue();
                     }
                     return new Resultado(TipoDato.DECIMAL, a * b);
                 }
-                //int ** char || char ** int
+                //int * char || char * int
                 if ((r1.getTipo() == TipoDato.ENTERO && r2.getTipo() == TipoDato.CARACTER)
                         || (r1.getTipo() == TipoDato.CARACTER && r2.getTipo() == TipoDato.ENTERO)) {
                     int a, b;
@@ -246,7 +246,7 @@ public class OpAritmeticosExpr extends Expr {
                     } else {
                         b = (double) v2;
                     }
-                    return new Resultado(TipoDato.DECIMAL, a % b);
+                    return new Resultado(TipoDato.DECIMAL, Math.pow(a, b));
                 }
                 ManejadorErrores.agregar("Semantico", "No se puede potenciar entre " + r1.getTipo() + " y " + r2.getTipo(), linea, columna);
                 return new Resultado(TipoDato.ERROR, null);

@@ -13,6 +13,8 @@ import errores.ManejadorErrores;
 %line
 %column
 
+%ignorecase
+
 %{
 
     private Symbol symbol(int type) {
@@ -72,6 +74,7 @@ COMENT_MULTI = "/*"([^*]|\*+[^/])*\*+"/"
 "&&"        { return symbol(sym.AND); }
 "||"        { return symbol(sym.OR); }
 "!"         { return symbol(sym.NOT); }
+"^"         { return symbol(sym.XOR); }
 
 "("         { return symbol(sym.PAREN_A); }
 ")"         { return symbol(sym.PAREN_C); }

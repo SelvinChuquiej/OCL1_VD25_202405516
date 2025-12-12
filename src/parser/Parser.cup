@@ -37,7 +37,7 @@ parser code {:
         String lexema = (s.value != null) ? s.value.toString() : "Token desconocido";
         int linea = s.left;
         int columna = s.right;
-        //String mensaje = "Error Sintáctico Fatal (Irrecuperable): Se detuvo en '" + lexema + "'";     
+        String mensaje = "Error Sintáctico Fatal (Irrecuperable): Se detuvo en '" + lexema + "'";     
         ManejadorErrores.agregar("Sintáctico Fatal", mensaje, linea, columna);    
     }
 
@@ -240,6 +240,11 @@ expr ::=
     | NOT expr:e1
         {:
             RESULT = new OpLogicosExpr(e1, OpLogicosExpr.OpLog.NOT, e1left, e1right);
+        :} 
+//XOR
+    | expr:e1 XOR expr:e2
+        {:
+            RESULT = new OpLogicosExpr(e1, e2, OpLogicosExpr.OpLog.XOR, e1left, e2right);
         :}
     | ENTERO:n
         {:

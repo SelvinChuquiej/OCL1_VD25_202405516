@@ -17,7 +17,7 @@ import simbolo.TipoDato;
 public class OpLogicosExpr extends Expr {
 
     public enum OpLog {
-        AND, OR, NOT
+        AND, OR, NOT, XOR
     }
 
     private Expr izq;
@@ -69,6 +69,8 @@ public class OpLogicosExpr extends Expr {
                 return new Resultado(TipoDato.BOOLEANO, b1 && b2);
             case OR:
                 return new Resultado(TipoDato.BOOLEANO, b1 || b2);
+            case XOR:
+                 return new Resultado(TipoDato.BOOLEANO, b1 ^ b2);
             default:
                 ManejadorErrores.agregar("Semantico", "Operador logico desconocido " + op, linea, columna);
                 return new Resultado(TipoDato.ERROR, null);
