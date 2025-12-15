@@ -177,15 +177,13 @@ public class MainWindow extends javax.swing.JFrame {
             Parser parser = new Parser(lexer);
             Symbol resultadoCUP = parser.parse();
 
-            if (ManejadorErrores.hayErrores()) {
-                mostrarErrores();
-                return;
-            }
-
             Object res = resultadoCUP.value;
 
             if (res == null) {
-                Consola.print("Error: No se pudo analizar el codigo");
+                if (!ManejadorErrores.hayErrores()) {
+                    Consola.print("Error: No se genero el AST");
+                }
+                mostrarErrores();
                 return;
             }
 
@@ -199,11 +197,11 @@ public class MainWindow extends javax.swing.JFrame {
                         try {
                             instruccion.ejecutar(global);
                         } catch (Exception e) {
-                            ManejadorErrores.agregar("Semantico", "Error en ejeccion: " + e.getMessage(), -1, -1);
+                            ManejadorErrores.agregar("Semantico", "Error en ejeccion: " + e.getMessage(), instruccion.getLine(), instruccion.getColumn());
                             Consola.print("Error en ejecucion: " + e.getMessage());
                         }
                     } else {
-                        Consola.print("Advertencia: Elemento ignorado (No es sentencia)");
+                        
                     }
                 }
 
@@ -217,11 +215,11 @@ public class MainWindow extends javax.swing.JFrame {
                     Consola.print(global.toString());
                 }
             } else {
-                Consola.print("Error: Resultado inesperado");
+                Consola.print("Error: El parser no devolvio una lista de sentencias");
             }
         } catch (Exception e) {
             ManejadorErrores.agregar("General", "Error inesperado: " + e.getMessage(), -1, -1);
-            Consola.print("Error inesperado: " + e.getMessage());
+            Consola.print("Error critico: " + e.getMessage());
             e.printStackTrace();
             mostrarErrores();
         }
@@ -283,7 +281,7 @@ public class MainWindow extends javax.swing.JFrame {
         BufferedWriter archivo_salida = null;
         try {
             archivo_salida = new BufferedWriter(new FileWriter(archivo));
-            jTextArea1.write(archivo_salida);       
+            jTextArea1.write(archivo_salida);
         } catch (IOException e) {
         } finally {
             if (archivo_salida != null) {

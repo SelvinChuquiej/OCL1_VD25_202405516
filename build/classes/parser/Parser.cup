@@ -134,6 +134,16 @@ sentencia ::=
     | continue_stmt:ct      {: RESULT = ct; :}
     | for_stmt:f            {: RESULT = f; :}
     | do_while_stmt:dwh     {: RESULT = dwh; :}
+    | error PUNTO_COMA     
+        {: 
+            System.out.println("Error sintáctico recuperado (se esperaba punto y coma)"); 
+            RESULT = null; 
+        :}
+    | error LLAVE_C
+        {: 
+            System.out.println("Error sintáctico recuperado (se esperaba llave de cierre)"); 
+             RESULT = null; 
+        :}
     ;
 
 //print
