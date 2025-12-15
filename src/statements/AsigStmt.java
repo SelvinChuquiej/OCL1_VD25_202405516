@@ -29,21 +29,21 @@ public class AsigStmt extends Stmt {
     }
 
     @Override
-    public Resultado ejecutar(TablaSimbolos tabla) {
+    public ControlStmt ejecutar(TablaSimbolos tabla) {
         Simbolo simbolo = tabla.obtenerVariable(this.id);
 
         if (simbolo == null) {
             ManejadorErrores.agregar("Semantico", "La variable +" + id + " no ha sido declarada", linea, columna);
-            return new Resultado(TipoDato.ERROR, null);
+            return ControlStmt.normal();
         }
         Resultado res = expresion.evaluar(tabla);
         if (res.getTipo() == TipoDato.ERROR) {
-            return res;
+            return ControlStmt.normal();
         }
         if (simbolo.getTipo() != res.getTipo()) {
             ManejadorErrores.agregar("Semantico", "Tipos imcompatible, no puedes asignar " + res.getTipo() + " a la variable "
                     + id + " de tipo " + simbolo.getTipo(), linea, columna);
-            return new Resultado(TipoDato.ERROR, null);
+            return ControlStmt.normal();
         }
         simbolo.setValor(res.getValor());
         return null;

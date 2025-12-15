@@ -23,9 +23,12 @@ parser code {:
         String lexema = "";
         if(s.value != null) {
             lexema = s.value.toString();
+        } else if (s.sym >= 0 && s.sym < parser.sym.terminalNames.length) {
+            lexema = parser.sym.terminalNames[s.sym];
         } else {
             lexema = "Token desconocido";
-        }  
+        }
+
         int linea = s.left;
         int columna = s.right;     
         String mensaje = "Error Sintáctico: No se esperaba el componente '" + lexema + "'";   
@@ -56,8 +59,10 @@ terminal IGUAL_IGUAL, DIFERENTE, MENOR_IGUAL, MAYOR_IGUAL, MENOR, MAYOR, IGUAL;
 terminal AND, OR, NOT, XOR;
 terminal INCREMENTO, DECREMENTO;
 
-terminal PAREN_A, PAREN_C;
+terminal PAREN_A, PAREN_C, LLAVE_A, LLAVE_C;
 terminal PUNTO_COMA, DOS_PUNTOS;
+
+terminal IF, ELSE, SWITCH, CASE, DEFAULT, BREAK, CONTINUE, WHILE;
 
 terminal ENTERO, DECIMAL, CARACTER, CADENA;
 terminal ID;
@@ -66,6 +71,9 @@ terminal UMENOS;
 
 non terminal List inicio, lista_sentencias;
 non terminal Stmt sentencia, print_stmt, declaracion, asignacion, incremento, decremento;
+non terminal Stmt if_stmt, switch_stmt, while_stmt, break_stmt, continue_stmt;
+non terminal CaseStmt caso_item;
+non terminal List<CaseStmt> lista_casos;
 non terminal Expr expr;
 non terminal TipoDato tipo;
 
@@ -99,13 +107,31 @@ lista_sentencias ::=
         :}
     ;
 
+//Lista Casos
+lista_casos ::=
+      lista_casos:l caso_item:c
+        {:
+            if (c != null) l.add(c);
+            RESULT = l;
+        :}
+    | /* VACIO */
+        {:
+            RESULT = new ArrayList<CaseStmt>();
+        :}
+    ;
+
 //Sentencia
 sentencia ::=
-    print_stmt:p    {: RESULT = p; :} 
-    | declaracion:d {: RESULT = d; :}
-    | asignacion:a  {: RESULT = a; :}
-    | incremento:i  {: RESULT = i; :}
-    | decremento:dec {: RESULT = dec; :}
+    print_stmt:p        {: RESULT = p; :} 
+    | declaracion:d     {: RESULT = d; :}
+    | asignacion:a      {: RESULT = a; :}
+    | incremento:i      {: RESULT = i; :}
+    | decremento:dec    {: RESULT = dec; :}
+    | if_stmt:ifs       {: RESULT = ifs; :}
+    | switch_stmt:sw    {: RESULT = sw; :}
+    | while_stmt:wh    {: RESULT = wh; :}
+    | break_stmt:br     {: RESULT = br; :}
+    | continue_stmt:ct  {: RESULT = ct; :}
     ;
 
 //print
@@ -150,6 +176,56 @@ decremento ::=
         {:
             RESULT = new IncDecStmt(id.toString(), IncDecStmt.OpIncDec.DECREMENTO, idleft, idright);
         :}
+    ;
+
+//If
+if_stmt ::=
+    IF PAREN_A expr:e PAREN_C LLAVE_A lista_sentencias:l1 LLAVE_C 
+        {: RESULT = new IfStmt(e, l1, null, eleft, eright); :}
+    | IF PAREN_A expr:e PAREN_C LLAVE_A lista_sentencias:l1 LLAVE_C ELSE LLAVE_A lista_sentencias:l2 LLAVE_C
+        {: RESULT = new IfStmt(e, l1, l2, eleft, eright);  :}
+    | IF PAREN_A expr:e PAREN_C LLAVE_A lista_sentencias:l1 LLAVE_C ELSE if_stmt:l2
+        {: 
+            List<Stmt> bloqueElse = new ArrayList<>();
+            bloqueElse.add(l2);
+            RESULT = new IfStmt(e, l1, bloqueElse, eleft, eright);
+        :}
+    ;
+
+//Swicht
+switch_stmt ::=
+    SWITCH PAREN_A expr:e PAREN_C LLAVE_A lista_casos:l LLAVE_C
+        {:
+            RESULT = new SwitchStmt(e, l, eleft, eright);
+        :}
+    ;
+
+//casos de Swicht
+caso_item ::=
+    CASE expr:e DOS_PUNTOS lista_sentencias:l
+        {: 
+            RESULT = new CaseStmt(e, l, eleft, eright);
+        :}
+    | DEFAULT DOS_PUNTOS lista_sentencias:l
+        {:
+            RESULT = new CaseStmt(null, l, lleft, lright);
+        :}
+    ;
+
+//While
+while_stmt ::=
+    WHILE PAREN_A expr:e PAREN_C LLAVE_A lista_sentencias:l LLAVE_C
+        {:
+            RESULT = new WhileStmt(e, l, eleft, eright);
+        :}
+    ;
+
+ break_stmt ::=
+    BREAK:b PUNTO_COMA {: RESULT = new BreakStmt(bleft, bright); :}
+    ;
+
+ continue_stmt ::=
+    CONTINUE:c PUNTO_COMA {: RESULT = new ContinueStmt(cleft, cright); :}
     ;
 
 tipo ::=

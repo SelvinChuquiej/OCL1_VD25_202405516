@@ -31,7 +31,7 @@ import errores.ManejadorErrores;
 DIGITO      = [0-9]
 LETRA       = [a-zA-Z_]
 IDRESTO     = [a-zA-Z0-9_]
-ESPACIO     = [ \t\r\n\f]+
+ESPACIO     = [ \t\r\n\f\u00A0]+
 ID          = {LETRA}{IDRESTO}*
 
 CADENA      = \"([^\"\\]|\\[\"\'ntbr\\])*\"  
@@ -55,13 +55,21 @@ COMENT_MULTI = "/*"([^*]|\*+[^/])*\*+"/"
 "false"     { return symbol(sym.FALSE); }
 "print"     { return symbol(sym.PRINT); }
 
+"if"        { return symbol(sym.IF); }   
+"else"      { return symbol(sym.ELSE); }  
+"switch"    { return symbol(sym.SWITCH); } 
+"case"      { return symbol(sym.CASE); }  
+"default"   { return symbol(sym.DEFAULT); }  
+"break"     { return symbol(sym.BREAK); }  
+"continue"  { return symbol(sym.CONTINUE); }
+"while"     { return symbol(sym.WHILE); }
+
 "+"         { return symbol(sym.MAS); }
 "-"         { return symbol(sym.MENOS); }
 "*"         { return symbol(sym.POR); }
 "/"         { return symbol(sym.DIV); }
 "%"         { return symbol(sym.MOD); }
 "**"         { return symbol(sym.POT); }
-
 
 "="        { return symbol(sym.IGUAL); }
 "=="        { return symbol(sym.IGUAL_IGUAL); }
@@ -78,6 +86,8 @@ COMENT_MULTI = "/*"([^*]|\*+[^/])*\*+"/"
 
 "("         { return symbol(sym.PAREN_A); }
 ")"         { return symbol(sym.PAREN_C); }
+"{"         { return symbol(sym.LLAVE_A); }
+"}"         { return symbol(sym.LLAVE_C); }
 ";"         { return symbol(sym.PUNTO_COMA); }
 ":"         { return symbol(sym.DOS_PUNTOS); }
 

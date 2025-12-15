@@ -25,13 +25,13 @@ public class PrintStmt extends Stmt {
     }
 
     @Override
-    public Resultado ejecutar(TablaSimbolos tabla) {
+    public ControlStmt ejecutar(TablaSimbolos tabla) {
         Resultado res = expresion.evaluar(tabla);
         if (res.getTipo() == TipoDato.ERROR || res.getValor() == null) {
-            return null;
+            return ControlStmt.normal();
         }
         Consola.print(String.valueOf(res.getValor()));
-        return null;
+        return ControlStmt.normal();
     }
 
 }

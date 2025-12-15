@@ -38,19 +38,19 @@ public class VarDeclStmt extends Stmt {
     }
 
     @Override
-    public Resultado ejecutar(TablaSimbolos tabla) {
+    public ControlStmt ejecutar(TablaSimbolos tabla) {
         Object valorFinal = null;
 
         if (expresion != null) {
             Resultado res = expresion.evaluar(tabla);
             if (res == null || res.getTipo() == TipoDato.ERROR) {
-                return new Resultado(TipoDato.ERROR, null);
+                return ControlStmt.normal();
             }
 
             if (this.tipo != res.getTipo()) {
                 ManejadorErrores.agregar("Semantico", "No se puede asignar un valor de tipo "
                         + res.getTipo() + " a la variable " + id + " de tipo " + this.tipo, linea, columna);
-                return new Resultado(TipoDato.ERROR, null);
+                return ControlStmt.normal();
             }
             valorFinal = res.getValor();
         } else {
@@ -59,7 +59,7 @@ public class VarDeclStmt extends Stmt {
         Simbolo s = new Simbolo(this.id, this.tipo, valorFinal);
         tabla.declararVariable(this.id, s);
 
-        return null;
+        return ControlStmt.normal();
     }
 
     private Object valorPorDefecto(TipoDato tipo) {

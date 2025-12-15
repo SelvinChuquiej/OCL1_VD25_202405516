@@ -32,12 +32,12 @@ public class IncDecStmt extends Stmt {
     }
 
     @Override
-    public Resultado ejecutar(TablaSimbolos tabla) {
+    public ControlStmt ejecutar(TablaSimbolos tabla) {
         Simbolo sim = tabla.obtenerVariable(id);
         if (sim == null) {
             ManejadorErrores.agregar("Semantico", "La variable +" + id + " no ha sido declarada "
                     + (op == OpIncDec.INCREMENTO ? "incremento" : "decremento"), linea, columna);
-            return new Resultado(TipoDato.ERROR, null);
+            return ControlStmt.normal();
         }
         Object valorActual = sim.getValor();
         TipoDato tipo = sim.getTipo();
@@ -46,7 +46,7 @@ public class IncDecStmt extends Stmt {
             ManejadorErrores.agregar("Semantico", "Solo se puede aplicar "
                     + (op == OpIncDec.INCREMENTO ? "incremento" : "decremento")
                     + " a variables numericas", linea, columna);
-            return new Resultado(TipoDato.ERROR, null);
+            return ControlStmt.normal();
         }
 
         Object nuevoValor = null;
@@ -68,6 +68,6 @@ public class IncDecStmt extends Stmt {
             nuevoValor = v;
         }
         sim.setValor(nuevoValor);
-        return new Resultado(tipo, nuevoValor);
+        return ControlStmt.normal();
     }
 }
