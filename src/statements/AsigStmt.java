@@ -46,6 +46,6 @@ public class AsigStmt extends Stmt {
             return ControlStmt.normal();
         }
         simbolo.setValor(res.getValor());
-        return null;
+        return ControlStmt.normal();
     }
 }

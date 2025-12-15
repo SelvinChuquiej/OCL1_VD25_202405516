@@ -63,6 +63,8 @@ COMENT_MULTI = "/*"([^*]|\*+[^/])*\*+"/"
 "break"     { return symbol(sym.BREAK); }  
 "continue"  { return symbol(sym.CONTINUE); }
 "while"     { return symbol(sym.WHILE); }
+"for"       { return symbol(sym.FOR); }
+"do"        { return symbol(sym.DO); }
 
 "+"         { return symbol(sym.MAS); }
 "-"         { return symbol(sym.MENOS); }

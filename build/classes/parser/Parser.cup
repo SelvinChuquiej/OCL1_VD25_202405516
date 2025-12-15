@@ -62,7 +62,7 @@ terminal INCREMENTO, DECREMENTO;
 terminal PAREN_A, PAREN_C, LLAVE_A, LLAVE_C;
 terminal PUNTO_COMA, DOS_PUNTOS;
 
-terminal IF, ELSE, SWITCH, CASE, DEFAULT, BREAK, CONTINUE, WHILE;
+terminal IF, ELSE, SWITCH, CASE, DEFAULT, BREAK, CONTINUE, WHILE, FOR, DO;
 
 terminal ENTERO, DECIMAL, CARACTER, CADENA;
 terminal ID;
@@ -71,7 +71,7 @@ terminal UMENOS;
 
 non terminal List inicio, lista_sentencias;
 non terminal Stmt sentencia, print_stmt, declaracion, asignacion, incremento, decremento;
-non terminal Stmt if_stmt, switch_stmt, while_stmt, break_stmt, continue_stmt;
+non terminal Stmt if_stmt, switch_stmt, while_stmt, break_stmt, continue_stmt, for_stmt, for_init, for_update, do_while_stmt;
 non terminal CaseStmt caso_item;
 non terminal List<CaseStmt> lista_casos;
 non terminal Expr expr;
@@ -122,16 +122,18 @@ lista_casos ::=
 
 //Sentencia
 sentencia ::=
-    print_stmt:p        {: RESULT = p; :} 
-    | declaracion:d     {: RESULT = d; :}
-    | asignacion:a      {: RESULT = a; :}
-    | incremento:i      {: RESULT = i; :}
-    | decremento:dec    {: RESULT = dec; :}
-    | if_stmt:ifs       {: RESULT = ifs; :}
-    | switch_stmt:sw    {: RESULT = sw; :}
-    | while_stmt:wh    {: RESULT = wh; :}
-    | break_stmt:br     {: RESULT = br; :}
-    | continue_stmt:ct  {: RESULT = ct; :}
+    print_stmt:p            {: RESULT = p; :} 
+    | declaracion:d         {: RESULT = d; :}
+    | asignacion:a          {: RESULT = a; :}
+    | incremento:i          {: RESULT = i; :}
+    | decremento:dec        {: RESULT = dec; :}
+    | if_stmt:ifs           {: RESULT = ifs; :}
+    | switch_stmt:sw        {: RESULT = sw; :}
+    | while_stmt:wh         {: RESULT = wh; :}
+    | break_stmt:br         {: RESULT = br; :}
+    | continue_stmt:ct      {: RESULT = ct; :}
+    | for_stmt:f            {: RESULT = f; :}
+    | do_while_stmt:dwh     {: RESULT = dwh; :}
     ;
 
 //print
@@ -226,6 +228,42 @@ while_stmt ::=
 
  continue_stmt ::=
     CONTINUE:c PUNTO_COMA {: RESULT = new ContinueStmt(cleft, cright); :}
+    ;
+
+// Reglas For
+for_init ::=
+    declaracion:d   {: RESULT = d; :}
+    | asignacion:a  {: RESULT = a; :}
+    ;
+
+for_update ::=
+    ID:id INCREMENTO
+        {:
+            RESULT = new IncDecStmt(id.toString(), IncDecStmt.OpIncDec.INCREMENTO, idleft, idright); 
+        :}
+    | ID:id DECREMENTO
+        {:
+            RESULT = new IncDecStmt(id.toString(), IncDecStmt.OpIncDec.DECREMENTO, idleft, idright); 
+        :}
+    | ID:id IGUAL expr:e
+        {:
+            RESULT = new AsigStmt(id.toString(), e, idleft, idright); 
+        :}
+    ;
+
+for_stmt ::=
+    FOR:f PAREN_A for_init:init expr:cond PUNTO_COMA for_update:up PAREN_C LLAVE_A lista_sentencias:l LLAVE_C
+        {:
+            RESULT = new ForStmt(init, up, cond, l, fleft, fright);
+        :}
+    ;
+
+//DoWhile
+do_while_stmt ::=
+    DO:d LLAVE_A lista_sentencias:l LLAVE_C WHILE PAREN_A expr:e PAREN_C PUNTO_COMA
+        {:
+            RESULT = new DoWhileStmt(e, l, dleft, dright);
+        :}
     ;
 
 tipo ::=

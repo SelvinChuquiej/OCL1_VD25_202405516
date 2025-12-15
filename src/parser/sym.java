@@ -11,7 +11,7 @@ public class sym {
   public static final int POT = 15;
   public static final int POR = 12;
   public static final int CHAR = 5;
-  public static final int ENTERO = 43;
+  public static final int ENTERO = 45;
   public static final int CASE = 38;
   public static final int XOR = 26;
   public static final int DIFERENTE = 17;
@@ -20,26 +20,27 @@ public class sym {
   public static final int DOS_PUNTOS = 34;
   public static final int INT = 2;
   public static final int LLAVE_C = 32;
+  public static final int FOR = 43;
   public static final int LLAVE_A = 31;
   public static final int NOT = 25;
   public static final int AND = 23;
   public static final int IGUAL = 22;
-  public static final int CARACTER = 45;
+  public static final int CARACTER = 47;
   public static final int OR = 24;
   public static final int DIV = 13;
   public static final int INCREMENTO = 27;
-  public static final int UMENOS = 49;
+  public static final int UMENOS = 51;
   public static final int IF = 35;
-  public static final int ID = 47;
+  public static final int ID = 49;
   public static final int PUNTO_COMA = 33;
   public static final int IGUAL_IGUAL = 16;
-  public static final int DECIMAL = 44;
+  public static final int DECIMAL = 46;
   public static final int EOF = 0;
   public static final int BOOLEAN = 4;
   public static final int TRUE = 7;
   public static final int DECREMENTO = 28;
   public static final int error = 1;
-  public static final int CADENA = 46;
+  public static final int CADENA = 48;
   public static final int MENOS = 11;
   public static final int MENOR = 20;
   public static final int MOD = 14;
@@ -55,7 +56,8 @@ public class sym {
   public static final int PAREN_A = 29;
   public static final int MENOR_IGUAL = 18;
   public static final int FALSE = 8;
-  public static final int VAR = 48;
+  public static final int VAR = 50;
+  public static final int DO = 44;
   public static final int PRINT = 9;
   public static final int MAS = 10;
   public static final String[] terminalNames = new String[] {
@@ -102,6 +104,8 @@ public class sym {
   "BREAK",
   "CONTINUE",
   "WHILE",
+  "FOR",
+  "DO",
   "ENTERO",
   "DECIMAL",
   "CARACTER",
