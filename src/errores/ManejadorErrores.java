@@ -5,6 +5,7 @@
 package errores;
 
 import java.util.ArrayList;
+import util.Consola;
 
 /**
  *
@@ -35,10 +36,16 @@ public class ManejadorErrores {
         StringBuilder html = new StringBuilder();
         html.append("<html><head><title>Reporte de Errores</title></head>");
         html.append("<style>table, th, td {border: 1px solid black; border-collapse: collapse; padding: 5px;}</style>");
+        
         html.append("<body><h1>Reporte de Errores</h1>");
         html.append("<table>");
-        html.append("<tr style='background-color: #f2f2f2;'><th>Tipo</th><th>Descripción</th><th>Línea</th><th>Columna</th></tr>");
-
+        html.append("<tr style='background-color: #f2f2f2;'>");
+        html.append("<th>Tipo</th>");
+        html.append("<th>Descripción</th>");
+        html.append("<th>Línea</th>");
+        html.append("<th>Columna</th>");
+        html.append("</tr>");
+        
         for (Error err : errores) {
             html.append("<tr>");
             html.append("<td>").append(err.getTipo()).append("</td>");
@@ -54,7 +61,6 @@ public class ManejadorErrores {
             java.io.FileWriter writer = new java.io.FileWriter("ReporteErrores.html");
             writer.write(html.toString());
             writer.close();
-            System.out.println("Reporte de errores generado con éxito.");
         } catch (Exception e) {
             e.printStackTrace();
         }

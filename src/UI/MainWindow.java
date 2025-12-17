@@ -16,16 +16,14 @@ import util.Consola;
 import errores.Error;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
-import java.io.DataInputStream;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
 import javax.swing.filechooser.FileNameExtensionFilter;
+import tokens.ReporteTabla;
 import util.Editor;
 
 /**
@@ -153,14 +151,14 @@ public class MainWindow extends javax.swing.JFrame {
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addContainerGap(10, Short.MAX_VALUE)
+                .addContainerGap()
                 .addComponent(jLabel2)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 212, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(18, 18, 18)
+                .addGap(24, 24, 24)
                 .addComponent(jLabel1)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 208, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 318, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(22, 22, 22))
         );
 
@@ -169,8 +167,10 @@ public class MainWindow extends javax.swing.JFrame {
 
     private void jMenuItem2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem2ActionPerformed
         // TODO add your handling code here
+        ReporteTabla.limpiar();
         ManejadorErrores.limpiar();
         Consola.clear();
+
         String input = jTextArea1.getText();
         try {
             Lexer lexer = new Lexer(new StringReader(input));
@@ -181,47 +181,48 @@ public class MainWindow extends javax.swing.JFrame {
 
             if (res == null) {
                 if (!ManejadorErrores.hayErrores()) {
-                    Consola.print("Error: No se genero el AST");
+                    Consola.print("Error: No se genero el AST (Parser devolvió null)");
                 }
                 mostrarErrores();
                 return;
             }
 
-            if (res instanceof List) {
-                List<Object> lista = (List<Object>) res;
-                TablaSimbolos global = new TablaSimbolos();
+            if (resultadoCUP != null && res instanceof List) {
+                List<Stmt> listaStmt = (List<Stmt>) res;
+                TablaSimbolos tablaGlobal = new TablaSimbolos();
 
-                for (Object o : lista) {
-                    if (o instanceof Stmt) {
-                        Stmt instruccion = (Stmt) o;
+                if (!ManejadorErrores.hayErrores()) {
+
+                    for (Stmt stmt : listaStmt) {
+                        if (stmt == null) {
+                            continue;
+                        }
                         try {
-                            instruccion.ejecutar(global);
+                            stmt.ejecutar(tablaGlobal);
                         } catch (Exception e) {
-                            ManejadorErrores.agregar("Semantico", "Error en ejeccion: " + e.getMessage(), instruccion.getLine(), instruccion.getColumn());
+                            ManejadorErrores.agregar("Ejecucion", "Error recuperable: " + e.getMessage(), stmt.getLinea(), stmt.getColumna());
                             Consola.print("Error en ejecucion: " + e.getMessage());
                         }
-                    } else {
-                        
                     }
+                } else {
+                    Consola.print("No se puede ejecutar porque el codigo contiene errores sintacticos");
                 }
 
-                Consola.print("");
                 if (ManejadorErrores.hayErrores()) {
-                    Consola.print("=== EJECUCIÓN FINALIZADA CON ERRORES ===");
-                    mostrarErrores();
+                    Consola.print("\n=== EJECUCIÓN FINALIZADA CON ERRORES ===\n");
                 } else {
-                    Consola.print("=== EJECUCIÓN COMPLETADA EXITOSAMENTE ===");
-                    Consola.print("\nTabla de símbolos:");
-                    Consola.print(global.toString());
+                    Consola.print("\n=== EJECUCIÓN COMPLETADA EXITOSAMENTE ===\n");
                 }
+
+                mostrarErrores();
+                mostrarTokens();
             } else {
                 Consola.print("Error: El parser no devolvio una lista de sentencias");
             }
         } catch (Exception e) {
-            ManejadorErrores.agregar("General", "Error inesperado: " + e.getMessage(), -1, -1);
-            Consola.print("Error critico: " + e.getMessage());
+            ManejadorErrores.agregar("Critico", "Error fatal: " + e.getMessage(), 0, 0);
+            Consola.print("Error fatal: " + e.getMessage());
             e.printStackTrace();
-            mostrarErrores();
         }
     }//GEN-LAST:event_jMenuItem2ActionPerformed
 
@@ -231,18 +232,14 @@ public class MainWindow extends javax.swing.JFrame {
         for (Error err : ManejadorErrores.getErrores()) {
             Consola.print(err.toString());
         }
-
-        Consola.print("Se ha generado el archivo 'ReporteErrores.html' con el detalle.");
-
-        try {
-            java.io.File archivo = new java.io.File("ReporteErrores.html");
-            if (archivo.exists()) {
-                java.awt.Desktop.getDesktop().open(archivo);
-            }
-        } catch (Exception e) {
-        }
+        Consola.print("\nSe ha generado el archivo 'ReporteErrores.html' con el detalle.");
     }
 
+    private void mostrarTokens() {
+        ReporteTabla.generarReporte();
+
+        Consola.print("Se ha generado el archivo 'ReporteSimbolos.html' con el detalle.");
+    }
 
     private void jMenuItem3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem3ActionPerformed
         // TODO add your handling code here:

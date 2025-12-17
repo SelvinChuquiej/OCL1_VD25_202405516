@@ -13,6 +13,10 @@ public class Error {
     private String descripcion;
     private int linea;
     private int columna;
+    
+    public enum TipoError {
+        LEXICO, SINTACTICO, SEMANTICO
+    }
 
     public Error(String tipo, String descripcion, int linea, int columna) {
         this.tipo = tipo;
@@ -39,6 +43,6 @@ public class Error {
 
     @Override
     public String toString() {
-        return "Excepcion{" + "tipo=" + tipo + ", Descripcion=" + descripcion + ", linea=" + linea + ", columna=" + columna + '}';
+        return "Error " + tipo + ", " + descripcion + ", linea= " + linea + ", columna= " + columna;
     }
 }

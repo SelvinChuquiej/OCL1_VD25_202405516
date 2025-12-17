@@ -7,6 +7,7 @@ package statements;
 import AST.Expr;
 import AST.Resultado;
 import AST.Stmt;
+import errores.Error.TipoError;
 import errores.ManejadorErrores;
 import java.util.List;
 import simbolo.TablaSimbolos;
@@ -34,7 +35,7 @@ public class IfStmt extends Stmt {
         Resultado result = expresion.evaluar(tabla);
 
         if (result.getTipo() != TipoDato.BOOLEANO) {
-            ManejadorErrores.agregar("Semantico", "La condicion if debe ser booleana", linea, columna);
+            ManejadorErrores.agregar(TipoError.SEMANTICO.toString(), "La condicion if debe ser booleana", linea, columna);
             return ControlStmt.normal();
         }
 
@@ -43,7 +44,8 @@ public class IfStmt extends Stmt {
         if (bloque == null) {
             return ControlStmt.normal();
         }
-        TablaSimbolos local = new TablaSimbolos(tabla);
+        String nombreEntorno = "If_" + this.linea;
+        TablaSimbolos local = new TablaSimbolos(tabla, nombreEntorno);
         for (Stmt s : bloque) {
             ControlStmt c = s.ejecutar(local);
             if (c != null && c.tipo != ControlStmt.Tipo.NORMAL) {

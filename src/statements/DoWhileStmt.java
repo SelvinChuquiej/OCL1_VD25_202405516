@@ -28,19 +28,21 @@ public class DoWhileStmt extends Stmt {
 
     @Override
     public ControlStmt ejecutar(TablaSimbolos tabla) {
-        do {
-            TablaSimbolos tablaLocal = new TablaSimbolos(tabla);
-            boolean rompePorContinue = false;
 
+        String nombreEntorno = "DoWhile_" + this.linea;
+        TablaSimbolos tablaLoop = new TablaSimbolos(tabla, nombreEntorno);
+
+        do {
+            TablaSimbolos tablaIter = new TablaSimbolos(tablaLoop, nombreEntorno + "_iter");
             for (Stmt s : bloque) {
-                ControlStmt res = s.ejecutar(tablaLocal);
-                
+
+                ControlStmt res = s.ejecutar(tablaIter);
+
                 if (res.getTipo() != ControlStmt.Tipo.NORMAL) {
                     if (res.getTipo() == ControlStmt.Tipo.BREAK) {
                         return ControlStmt.normal();
                     }
                     if (res.getTipo() == ControlStmt.Tipo.CONTINUE) {
-                        rompePorContinue = true;
                         break;
                     }
                     if (res.getTipo() == ControlStmt.Tipo.RETURN) {
@@ -48,7 +50,7 @@ public class DoWhileStmt extends Stmt {
                     }
                 }
             }
-            Resultado resCond = condicion.evaluar(tabla);
+            Resultado resCond = condicion.evaluar(tablaLoop);
 
             if (resCond.getTipo() == TipoDato.ERROR) {
                 return ControlStmt.normal();

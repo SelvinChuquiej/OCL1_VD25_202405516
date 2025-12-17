@@ -11,6 +11,8 @@ import errores.ManejadorErrores;
 import simbolo.Simbolo;
 import simbolo.TablaSimbolos;
 import simbolo.TipoDato;
+import tokens.ReporteTabla;
+import errores.Error.TipoError;
 import util.Consola;
 
 /**
@@ -33,7 +35,7 @@ public class AsigStmt extends Stmt {
         Simbolo simbolo = tabla.obtenerVariable(this.id);
 
         if (simbolo == null) {
-            ManejadorErrores.agregar("Semantico", "La variable +" + id + " no ha sido declarada", linea, columna);
+            ManejadorErrores.agregar(TipoError.SEMANTICO.toString(), "La variable " + id + " no ha sido declarada", linea, columna);
             return ControlStmt.normal();
         }
         Resultado res = expresion.evaluar(tabla);
@@ -41,11 +43,12 @@ public class AsigStmt extends Stmt {
             return ControlStmt.normal();
         }
         if (simbolo.getTipo() != res.getTipo()) {
-            ManejadorErrores.agregar("Semantico", "Tipos imcompatible, no puedes asignar " + res.getTipo() + " a la variable "
+            ManejadorErrores.agregar(TipoError.SEMANTICO.toString(), "Tipos imcompatible, no puedes asignar " + res.getTipo() + " a la variable "
                     + id + " de tipo " + simbolo.getTipo(), linea, columna);
             return ControlStmt.normal();
         }
         simbolo.setValor(res.getValor());
+        ReporteTabla.agregar(simbolo);
         return ControlStmt.normal();
     }
 }

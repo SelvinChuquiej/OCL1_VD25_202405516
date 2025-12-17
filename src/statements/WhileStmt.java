@@ -7,6 +7,7 @@ package statements;
 import AST.Expr;
 import AST.Resultado;
 import AST.Stmt;
+import errores.Error.TipoError;
 import errores.ManejadorErrores;
 import java.util.List;
 import simbolo.TablaSimbolos;
@@ -29,19 +30,18 @@ public class WhileStmt extends Stmt {
 
     @Override
     public ControlStmt ejecutar(TablaSimbolos tabla) {
-        TablaSimbolos scopeWhile = new TablaSimbolos(tabla);
         while (true) {
-            Resultado rc = expresion.evaluar(scopeWhile);
+            Resultado rc = expresion.evaluar(tabla);
             if (rc.getTipo() != TipoDato.BOOLEANO) {
-                ManejadorErrores.agregar("Semantico", "La condicion del while debe ser booleana", linea, columna);
+                ManejadorErrores.agregar(TipoError.SEMANTICO.toString(), "La condicion del while debe ser booleana", linea, columna);
                 return ControlStmt.normal();
             }
             boolean continuar = (Boolean) rc.getValor();
             if (!continuar) {
                 break;
             }
-
-            TablaSimbolos scopeIter = new TablaSimbolos(scopeWhile);
+            String nombreEntorno = "While_" + this.linea;
+            TablaSimbolos scopeIter = new TablaSimbolos(tabla, nombreEntorno);
 
             for (Stmt s : bloque) {
                 ControlStmt c = s.ejecutar(scopeIter);
@@ -59,12 +59,8 @@ public class WhileStmt extends Stmt {
                 if (c.getTipo() == ControlStmt.Tipo.RETURN) {
                     return c;
                 }
-
             }
-
         }
         return ControlStmt.normal();
-
     }
-
 }

@@ -3,15 +3,16 @@ package parser;
 
 import java_cup.runtime.*;
 import lexer.Lexer;
-
 import java.util.List;
 import java.util.ArrayList;
-
+import java.util.Set;
+import java.util.HashSet;
 import simbolo.*;
 import AST.*;
 import expresiones.*;
 import statements.*;
 import errores.ManejadorErrores;
+import errores.Error.TipoError;
 
 parser code {:
     public Parser(Lexer lexer) {
@@ -32,7 +33,7 @@ parser code {:
         int linea = s.left;
         int columna = s.right;     
         String mensaje = "Error Sintáctico: No se esperaba el componente '" + lexema + "'";   
-        ManejadorErrores.agregar("Sintáctico", mensaje, linea, columna);
+        ManejadorErrores.agregar(TipoError.SINTACTICO.toString(), mensaje, linea, columna);
     }
 
     @Override
@@ -41,7 +42,7 @@ parser code {:
         int linea = s.left;
         int columna = s.right;
         String mensaje = "Error Sintáctico Fatal (Irrecuperable): Se detuvo en '" + lexema + "'";     
-        ManejadorErrores.agregar("Sintáctico Fatal", mensaje, linea, columna);    
+        ManejadorErrores.agregar(TipoError.SINTACTICO.toString(), mensaje, linea, columna);    
     }
 
 :};
@@ -51,29 +52,31 @@ action code {:
 :};
 
 terminal INT, DOUBLE, BOOLEAN, CHAR, STRING;
-terminal TRUE, FALSE;
-terminal PRINT;
-
-terminal MAS, MENOS, POR, DIV, MOD, POT;
-terminal IGUAL_IGUAL, DIFERENTE, MENOR_IGUAL, MAYOR_IGUAL, MENOR, MAYOR, IGUAL;
-terminal AND, OR, NOT, XOR;
-terminal INCREMENTO, DECREMENTO;
-
-terminal PAREN_A, PAREN_C, LLAVE_A, LLAVE_C;
-terminal PUNTO_COMA, DOS_PUNTOS;
-
-terminal IF, ELSE, SWITCH, CASE, DEFAULT, BREAK, CONTINUE, WHILE, FOR, DO;
-
 terminal ENTERO, DECIMAL, CARACTER, CADENA;
+terminal TRUE, FALSE;
 terminal ID;
-terminal VAR;
+
+terminal PRINT, VAR;
+terminal IF, ELSE, SWITCH, CASE, DEFAULT;
+terminal WHILE, DO, FOR;
+terminal BREAK, CONTINUE;
+terminal MAS, MENOS, POR, DIV, MOD, POT;
+terminal INCREMENTO, DECREMENTO;
 terminal UMENOS;
+terminal IGUAL_IGUAL, DIFERENTE, MENOR_IGUAL, MAYOR_IGUAL, MENOR, MAYOR;
+terminal AND, OR, NOT, XOR;
+terminal IGUAL, PUNTO_COMA, DOS_PUNTOS;
+terminal PAREN_A, PAREN_C, LLAVE_A, LLAVE_C;
 
 non terminal List inicio, lista_sentencias;
-non terminal Stmt sentencia, print_stmt, declaracion, asignacion, incremento, decremento;
-non terminal Stmt if_stmt, switch_stmt, while_stmt, break_stmt, continue_stmt, for_stmt, for_init, for_update, do_while_stmt;
-non terminal CaseStmt caso_item;
+non terminal Stmt sentencia;
+non terminal Stmt if_stmt, switch_stmt, while_stmt, do_while_stmt, for_stmt;
+non terminal Stmt break_stmt, continue_stmt;
 non terminal List<CaseStmt> lista_casos;
+non terminal CaseStmt caso_item;
+non terminal Stmt default_case;
+non terminal Stmt for_init, for_update;
+non terminal Stmt print_stmt, declaracion, asignacion, incremento, decremento;
 non terminal Expr expr;
 non terminal TipoDato tipo;
 
@@ -89,14 +92,13 @@ precedence right UMENOS;
 
 start with inicio;
 
+//Inicio
 inicio ::=
-    lista_sentencias:ls
-        {: RESULT = ls; :}
+    lista_sentencias:ls     {: RESULT = ls; :}
     ;
 
-//Lista Sentencias
 lista_sentencias ::=
-      lista_sentencias:ls sentencia:s
+    lista_sentencias:ls sentencia:s
         {: 
            if (s != null) ls.add(s);
            RESULT = ls; 
@@ -107,20 +109,6 @@ lista_sentencias ::=
         :}
     ;
 
-//Lista Casos
-lista_casos ::=
-      lista_casos:l caso_item:c
-        {:
-            if (c != null) l.add(c);
-            RESULT = l;
-        :}
-    | /* VACIO */
-        {:
-            RESULT = new ArrayList<CaseStmt>();
-        :}
-    ;
-
-//Sentencia
 sentencia ::=
     print_stmt:p            {: RESULT = p; :} 
     | declaracion:d         {: RESULT = d; :}
@@ -136,61 +124,18 @@ sentencia ::=
     | do_while_stmt:dwh     {: RESULT = dwh; :}
     | error PUNTO_COMA     
         {: 
-            System.out.println("Error sintáctico recuperado (se esperaba punto y coma)"); 
+            System.out.println("Error sintáctico recuperado por ';'"); 
             RESULT = null; 
         :}
     | error LLAVE_C
         {: 
-            System.out.println("Error sintáctico recuperado (se esperaba llave de cierre)"); 
+            System.out.println("Error sintáctico recuperado '}'"); 
              RESULT = null; 
         :}
     ;
 
-//print
-print_stmt ::=
-    PRINT PAREN_A expr:e PAREN_C PUNTO_COMA
-        {:
-           RESULT = new PrintStmt(e, eleft, eright);
-        :}
-    ;
+//Sentencias de Control
 
-//Declaracion
-declaracion ::=
-    VAR ID:nombre DOS_PUNTOS tipo:t IGUAL expr:e PUNTO_COMA
-        {:
-            RESULT = new VarDeclStmt(t, nombre.toString(), e, nombreleft, nombreright);
-        :}
-    |  VAR ID:nombre DOS_PUNTOS tipo:t PUNTO_COMA
-        {:
-            RESULT = new VarDeclStmt(t, nombre.toString(), nombreleft, nombreright);
-        :}
-    ;
-
-//Asignacion
-asignacion ::=
-    ID:nombre IGUAL expr:e PUNTO_COMA
-        {:
-            RESULT = new AsigStmt (nombre.toString(), e, eleft, eright);
-        :}
-    ;
-
-//Incremento
-incremento ::=
-    ID:id INCREMENTO PUNTO_COMA
-        {:
-            RESULT = new IncDecStmt(id.toString(), IncDecStmt.OpIncDec.INCREMENTO, idleft, idright);
-        :}
-    ;
-
-//Decremento
-decremento ::=
-    ID:id DECREMENTO PUNTO_COMA
-        {:
-            RESULT = new IncDecStmt(id.toString(), IncDecStmt.OpIncDec.DECREMENTO, idleft, idright);
-        :}
-    ;
-
-//If
 if_stmt ::=
     IF PAREN_A expr:e PAREN_C LLAVE_A lista_sentencias:l1 LLAVE_C 
         {: RESULT = new IfStmt(e, l1, null, eleft, eright); :}
@@ -204,27 +149,43 @@ if_stmt ::=
         :}
     ;
 
-//Swicht
 switch_stmt ::=
     SWITCH PAREN_A expr:e PAREN_C LLAVE_A lista_casos:l LLAVE_C
         {:
-            RESULT = new SwitchStmt(e, l, eleft, eright);
+            RESULT = new SwitchStmt(e, l, null, eleft, eright);
+        :}
+    | SWITCH PAREN_A expr:e PAREN_C LLAVE_A lista_casos:l default_case:d LLAVE_C
+        {:
+            RESULT = new SwitchStmt(e, l, d, eleft, eright);
         :}
     ;
 
-//casos de Swicht
+lista_casos ::=
+    lista_casos:l caso_item:c
+        {:
+            if (c != null) l.add(c);
+            RESULT = l;
+        :}
+    | /* VACIO */
+        {:
+            RESULT = new ArrayList<CaseStmt>();
+        :}
+    ;
+
 caso_item ::=
     CASE expr:e DOS_PUNTOS lista_sentencias:l
         {: 
             RESULT = new CaseStmt(e, l, eleft, eright);
         :}
-    | DEFAULT DOS_PUNTOS lista_sentencias:l
-        {:
-            RESULT = new CaseStmt(null, l, lleft, lright);
+    ;
+
+default_case ::=
+    DEFAULT DOS_PUNTOS lista_sentencias:l
+        {: 
+            RESULT = new CaseStmt(null, l, lleft, lright); 
         :}
     ;
 
-//While
 while_stmt ::=
     WHILE PAREN_A expr:e PAREN_C LLAVE_A lista_sentencias:l LLAVE_C
         {:
@@ -232,18 +193,28 @@ while_stmt ::=
         :}
     ;
 
- break_stmt ::=
-    BREAK:b PUNTO_COMA {: RESULT = new BreakStmt(bleft, bright); :}
+do_while_stmt ::=
+    DO:d LLAVE_A lista_sentencias:l LLAVE_C WHILE PAREN_A expr:e PAREN_C PUNTO_COMA
+        {:
+            RESULT = new DoWhileStmt(e, l, dleft, dright);
+        :}
     ;
 
- continue_stmt ::=
-    CONTINUE:c PUNTO_COMA {: RESULT = new ContinueStmt(cleft, cright); :}
+for_stmt ::=
+    FOR:f PAREN_A for_init:init expr:cond PUNTO_COMA for_update:up PAREN_C LLAVE_A lista_sentencias:l LLAVE_C
+        {:
+            RESULT = new ForStmt(init, up, cond, l, fleft, fright);
+        :}
     ;
-
-// Reglas For
 for_init ::=
-    declaracion:d   {: RESULT = d; :}
-    | asignacion:a  {: RESULT = a; :}
+    declaracion:d   
+        {: 
+            RESULT = d; 
+        :}
+    | asignacion:a  
+        {: 
+            RESULT = a; 
+        :}
     ;
 
 for_update ::=
@@ -261,18 +232,50 @@ for_update ::=
         :}
     ;
 
-for_stmt ::=
-    FOR:f PAREN_A for_init:init expr:cond PUNTO_COMA for_update:up PAREN_C LLAVE_A lista_sentencias:l LLAVE_C
+ break_stmt ::=
+    BREAK:b PUNTO_COMA {: RESULT = new BreakStmt(bleft, bright); :}
+    ;
+
+ continue_stmt ::=
+    CONTINUE:c PUNTO_COMA {: RESULT = new ContinueStmt(cleft, cright); :}
+    ;
+
+print_stmt ::=
+    PRINT PAREN_A expr:e PAREN_C PUNTO_COMA
         {:
-            RESULT = new ForStmt(init, up, cond, l, fleft, fright);
+           RESULT = new PrintStmt(e, eleft, eright);
         :}
     ;
 
-//DoWhile
-do_while_stmt ::=
-    DO:d LLAVE_A lista_sentencias:l LLAVE_C WHILE PAREN_A expr:e PAREN_C PUNTO_COMA
+declaracion ::=
+    VAR ID:nombre DOS_PUNTOS tipo:t IGUAL expr:e PUNTO_COMA
         {:
-            RESULT = new DoWhileStmt(e, l, dleft, dright);
+            RESULT = new VarDeclStmt(t, nombre.toString(), e, nombreleft, nombreright);
+        :}
+    |  VAR ID:nombre DOS_PUNTOS tipo:t PUNTO_COMA
+        {:
+            RESULT = new VarDeclStmt(t, nombre.toString(), nombreleft, nombreright);
+        :}
+    ;
+
+asignacion ::=
+    ID:nombre IGUAL expr:e PUNTO_COMA
+        {:
+            RESULT = new AsigStmt (nombre.toString(), e, eleft, eright);
+        :}
+    ;
+
+incremento ::=
+    ID:id INCREMENTO PUNTO_COMA
+        {:
+            RESULT = new IncDecStmt(id.toString(), IncDecStmt.OpIncDec.INCREMENTO, idleft, idright);
+        :}
+    ;
+
+decremento ::=
+    ID:id DECREMENTO PUNTO_COMA
+        {:
+            RESULT = new IncDecStmt(id.toString(), IncDecStmt.OpIncDec.DECREMENTO, idleft, idright);
         :}
     ;
 
@@ -285,91 +288,87 @@ tipo ::=
     ;
 
 expr ::=
-//Suma
+    //Aritmeticas
       expr:e1 MAS expr:e2
         {:
            RESULT = new OpAritmeticosExpr(e1, e2, OpAritmeticosExpr.OpBin.MAS, e1left, e2right);
         :}
-//Resta
     | expr:e1 MENOS expr:e2
         {:
            RESULT = new OpAritmeticosExpr(e1, e2, OpAritmeticosExpr.OpBin.MENOS, e1left, e2right);
         :}
-//Multiplicacion
     | expr:e1 POR expr:e2
         {:
            RESULT = new OpAritmeticosExpr(e1, e2, OpAritmeticosExpr.OpBin.POR, e1left, e2right);
         :}
-//Division
     | expr:e1 DIV expr:e2
         {:
            RESULT = new OpAritmeticosExpr(e1, e2, OpAritmeticosExpr.OpBin.DIV, e1left, e2right);
         :}
-//Porcentaje
     | expr:e1 MOD expr:e2
         {:
            RESULT = new OpAritmeticosExpr(e1, e2, OpAritmeticosExpr.OpBin.MOD, e1left, e2right);
         :}
-//Potencia
     | expr:e1 POT expr:e2
         {:
            RESULT = new OpAritmeticosExpr(e1, e2, OpAritmeticosExpr.OpBin.POT, e1left, e2right);
         :}
-//Agrupacion
-    | PAREN_A expr:e PAREN_C
+
+    //Unarias
+    | PAREN_A tipo:t PAREN_C expr:e
         {:
-           RESULT = e;
-        :}
-//Igualacion
+            RESULT = new CastExpr (t, e, eleft, eright);
+        :} %prec UMENOS
+    | MENOS expr:e 
+        {:
+            RESULT = new NegacionExpr (e, eleft, eright);
+        :} %prec UMENOS
+    
+    //Relacionales
     | expr:e1 IGUAL_IGUAL expr:e2 
         {:
             RESULT = new OpRelacionalesExpr(e1, e2, OpRelacionalesExpr.OpRel.IGUAL_IGUAL, e1left, e2right);
         :}
-//Diferenciacion
     | expr:e1 DIFERENTE expr:e2 
         {:
             RESULT = new OpRelacionalesExpr(e1, e2, OpRelacionalesExpr.OpRel.DIFERENTE, e1left, e2right);
         :}
-//Menor Que
     | expr:e1 MENOR expr:e2 
         {:
             RESULT = new OpRelacionalesExpr(e1, e2, OpRelacionalesExpr.OpRel.MENOR, e1left, e2right);
         :}
-//Menor Igual Que
     | expr:e1 MENOR_IGUAL expr:e2 
         {:
             RESULT = new OpRelacionalesExpr(e1, e2, OpRelacionalesExpr.OpRel.MENOR_IGUAL, e1left, e2right);
         :}
-//Mayor Que
     | expr:e1 MAYOR expr:e2 
         {:
             RESULT = new OpRelacionalesExpr(e1, e2, OpRelacionalesExpr.OpRel.MAYOR, e1left, e2right);
         :}
-//Mayor Igual Que
     | expr:e1 MAYOR_IGUAL expr:e2 
         {:
             RESULT = new OpRelacionalesExpr(e1, e2, OpRelacionalesExpr.OpRel.MAYOR_IGUAL, e1left, e2right);
         :}
-//AND
+
+    //Logicas
     | expr:e1 AND expr:e2 
         {:
             RESULT = new OpLogicosExpr(e1, e2, OpLogicosExpr.OpLog.AND, e1left, e2right);
         :}
-//OR
     | expr:e1 OR expr:e2 
         {:
             RESULT = new OpLogicosExpr(e1, e2, OpLogicosExpr.OpLog.OR, e1left, e2right);
         :}
-//NOT
     | NOT expr:e1
         {:
             RESULT = new OpLogicosExpr(e1, OpLogicosExpr.OpLog.NOT, e1left, e1right);
         :} 
-//XOR
     | expr:e1 XOR expr:e2
         {:
             RESULT = new OpLogicosExpr(e1, e2, OpLogicosExpr.OpLog.XOR, e1left, e2right);
         :}
+
+    //Primitivos
     | ENTERO:n
         {:
            int v = Integer.parseInt(n.toString());
@@ -401,14 +400,8 @@ expr ::=
         {:
            RESULT = new VariableExpr(i.toString(), ileft, iright);
         :}
-//Casteo
-    | PAREN_A tipo:t PAREN_C expr:e
+    | PAREN_A expr:e PAREN_C
         {:
-            RESULT = new CastExpr (t, e, eleft, eright);
-        :} %prec UMENOS
-//Negacion
-    | MENOS expr:e 
-        {:
-            RESULT = new NegacionExpr (e, eleft, eright);
-        :} %prec UMENOS
+           RESULT = e;
+        :}
     ;

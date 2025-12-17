@@ -6,6 +6,7 @@ package expresiones;
 
 import AST.Expr;
 import AST.Resultado;
+import errores.Error.TipoError;
 import errores.ManejadorErrores;
 import simbolo.TablaSimbolos;
 import simbolo.TipoDato;
@@ -39,8 +40,13 @@ public class OpAritmeticosExpr extends Expr {
         Object v1 = r1.getValor();
         Object v2 = r2.getValor();
 
+        if (r1.getTipo() == TipoDato.ERROR || r2.getTipo() == TipoDato.ERROR) {
+            return new Resultado(TipoDato.ERROR, null);
+        }
+
         switch (op) {
             case MAS:
+
                 //Cualquier cosa + String
                 if (r1.getTipo() == TipoDato.CADENA || r2.getTipo() == TipoDato.CADENA) {
                     String result = v1.toString() + v2.toString();
@@ -110,7 +116,7 @@ public class OpAritmeticosExpr extends Expr {
                     String result = v1.toString() + v2.toString();
                     return new Resultado(TipoDato.CADENA, result);
                 }
-                ManejadorErrores.agregar("Semantico", "No se puede sumar " + r1.getTipo() + " con " + r2.getTipo(), linea, columna);
+                ManejadorErrores.agregar(TipoError.SEMANTICO.toString(), "No se puede sumar " + r1.getTipo() + " con " + r2.getTipo(), linea, columna);
                 return new Resultado(TipoDato.ERROR, null);
             case MENOS:
                 //int - int 
@@ -152,7 +158,7 @@ public class OpAritmeticosExpr extends Expr {
                     }
                     return new Resultado(TipoDato.ENTERO, a - b);
                 }
-                ManejadorErrores.agregar("Semantico", "No se puede restar " + r1.getTipo() + " con " + r2.getTipo(), linea, columna);
+                ManejadorErrores.agregar(TipoError.SEMANTICO.toString(), "No se puede restar " + r1.getTipo() + " con " + r2.getTipo(), linea, columna);
                 return new Resultado(TipoDato.ERROR, null);
             case POR:
                 //int * int 
@@ -193,7 +199,7 @@ public class OpAritmeticosExpr extends Expr {
                     }
                     return new Resultado(TipoDato.ENTERO, a * b);
                 }
-                ManejadorErrores.agregar("Semantico", "No se puede multiplicar " + r1.getTipo() + " con " + r2.getTipo(), linea, columna);
+                ManejadorErrores.agregar(TipoError.SEMANTICO.toString(), "No se puede multiplicar " + r1.getTipo() + " con " + r2.getTipo(), linea, columna);
                 return new Resultado(TipoDato.ERROR, null);
             case DIV:
                 boolean t1EsNumDIV = (r1.getTipo() == TipoDato.ENTERO || r1.getTipo() == TipoDato.DECIMAL || r1.getTipo() == TipoDato.CARACTER);
@@ -216,12 +222,12 @@ public class OpAritmeticosExpr extends Expr {
                         b = (double) ((Character) v2).charValue();
                     }
                     if (b == 0.0) {
-                        ManejadorErrores.agregar("Semantico", "No se puede dividir por cero", linea, columna);
+                        ManejadorErrores.agregar(TipoError.SEMANTICO.toString(), "No se puede dividir por cero", linea, columna);
                         return new Resultado(TipoDato.ERROR, null);
                     }
                     return new Resultado(TipoDato.DECIMAL, a / b);
                 }
-                ManejadorErrores.agregar("Semantico", "No se puede dividir " + r1.getTipo() + " con " + r2.getTipo(), linea, columna);
+                ManejadorErrores.agregar(TipoError.SEMANTICO.toString(), "No se puede dividir " + r1.getTipo() + " con " + r2.getTipo(), linea, columna);
                 return new Resultado(TipoDato.ERROR, null);
 
             case POT:
@@ -248,7 +254,7 @@ public class OpAritmeticosExpr extends Expr {
                     }
                     return new Resultado(TipoDato.DECIMAL, Math.pow(a, b));
                 }
-                ManejadorErrores.agregar("Semantico", "No se puede potenciar entre " + r1.getTipo() + " y " + r2.getTipo(), linea, columna);
+                ManejadorErrores.agregar(TipoError.SEMANTICO.toString(), "No se puede potenciar entre " + r1.getTipo() + " y " + r2.getTipo(), linea, columna);
                 return new Resultado(TipoDato.ERROR, null);
 
             case MOD:
@@ -267,15 +273,15 @@ public class OpAritmeticosExpr extends Expr {
                         b = (double) v2;
                     }
                     if (b == 0.0) {
-                        ManejadorErrores.agregar("Semantico", "No se puede realizar modulo con divisor cero", linea, columna);
+                        ManejadorErrores.agregar(TipoError.SEMANTICO.toString(), "No se puede realizar modulo con divisor cero", linea, columna);
                         return new Resultado(TipoDato.ERROR, null);
                     }
                     return new Resultado(TipoDato.DECIMAL, a % b);
                 }
-                ManejadorErrores.agregar("Semantico", "El operador modulo so puede aplciarse entre numeros, recibio " + r1.getTipo() + " y " + r2.getTipo(), linea, columna);
+                ManejadorErrores.agregar(TipoError.SEMANTICO.toString(), "El operador modulo so puede aplciarse entre numeros, recibio " + r1.getTipo() + " y " + r2.getTipo(), linea, columna);
                 return new Resultado(TipoDato.ERROR, null);
         }
-        ManejadorErrores.agregar("Semantico", "No se puede sumar ", linea, columna);
+        ManejadorErrores.agregar(TipoError.SEMANTICO.toString(), "No se puede sumar ", linea, columna);
         return new Resultado(TipoDato.ERROR, null);
     }
 }

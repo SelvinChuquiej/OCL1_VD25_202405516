@@ -7,6 +7,7 @@ package statements;
 import AST.Expr;
 import AST.Resultado;
 import AST.Stmt;
+import errores.Error.TipoError;
 import errores.ManejadorErrores;
 import simbolo.Simbolo;
 import simbolo.TablaSimbolos;
@@ -35,7 +36,7 @@ public class IncDecStmt extends Stmt {
     public ControlStmt ejecutar(TablaSimbolos tabla) {
         Simbolo sim = tabla.obtenerVariable(id);
         if (sim == null) {
-            ManejadorErrores.agregar("Semantico", "La variable +" + id + " no ha sido declarada "
+            ManejadorErrores.agregar(TipoError.SEMANTICO.toString(), "La variable " + id + " no ha sido declarada "
                     + (op == OpIncDec.INCREMENTO ? "incremento" : "decremento"), linea, columna);
             return ControlStmt.normal();
         }
@@ -43,7 +44,7 @@ public class IncDecStmt extends Stmt {
         TipoDato tipo = sim.getTipo();
 
         if (tipo != TipoDato.ENTERO && tipo != TipoDato.DECIMAL) {
-            ManejadorErrores.agregar("Semantico", "Solo se puede aplicar "
+            ManejadorErrores.agregar(TipoError.SEMANTICO.toString(), "Solo se puede aplicar "
                     + (op == OpIncDec.INCREMENTO ? "incremento" : "decremento")
                     + " a variables numericas", linea, columna);
             return ControlStmt.normal();

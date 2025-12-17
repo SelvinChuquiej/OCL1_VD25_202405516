@@ -6,6 +6,7 @@ package expresiones;
 
 import AST.Expr;
 import AST.Resultado;
+import errores.Error.TipoError;
 import errores.ManejadorErrores;
 import simbolo.TablaSimbolos;
 import simbolo.TipoDato;
@@ -34,7 +35,7 @@ public class CastExpr extends Expr {
         Object valor = res.getValor();
 
         if (!esCasteoPermitido(tipoOrigen, tipoDestino)) {
-            ManejadorErrores.agregar("Semantico", "No se castear de " + tipoOrigen + " a " + tipoDestino, linea, columna);
+            ManejadorErrores.agregar(TipoError.SEMANTICO.toString(), "No se castear de " + tipoOrigen + " a " + tipoDestino, linea, columna);
             return new Resultado(TipoDato.ERROR, null);
         }
         return realizarCasteo(valor, tipoOrigen, tipoDestino);

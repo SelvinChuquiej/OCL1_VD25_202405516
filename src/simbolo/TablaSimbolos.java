@@ -20,13 +20,13 @@ public class TablaSimbolos {
     public TablaSimbolos() {
         this.tablaAnterior = null;
         this.tablaActual = new HashMap<>();
-        this.nombre = "global";
+        this.nombre = "Global";
     }
 
-    public TablaSimbolos(TablaSimbolos tablaAnterior) {
+    public TablaSimbolos(TablaSimbolos tablaAnterior, String nombre) {
         this.tablaAnterior = tablaAnterior;
         this.tablaActual = new HashMap<>();
-        this.nombre = "";
+        this.nombre = nombre;
     }
 
     public boolean declararVariable(String id, Simbolo simbolo) {
@@ -40,12 +40,12 @@ public class TablaSimbolos {
 
     public Simbolo obtenerVariable(String id) {
         String clave = id.toLowerCase();
-        TablaSimbolos actual = this;
-        while (actual != null) {
-            if (actual.tablaActual.containsKey(clave)) {
-                return actual.tablaActual.get(clave);
+        TablaSimbolos t = this;
+        while (t != null) {
+            if (t.tablaActual.containsKey(clave)) {
+                return t.tablaActual.get(clave);
             }
-            actual = actual.tablaAnterior;
+            t = t.tablaAnterior;
         }
         return null;
     }
@@ -56,6 +56,16 @@ public class TablaSimbolos {
             return false;
         }
         simbolo.setValor(valor);
+        return true;
+    }
+
+    public boolean insertar(String id, TipoDato tipo, Object valor, int linea, int columna) {
+        String clave = id.toLowerCase();
+        if (tablaActual.containsKey(clave)) {
+            return false;
+        }
+        Simbolo s = new Simbolo(clave, tipo, valor, nombre, linea, columna);
+        tablaActual.put(clave, s);
         return true;
     }
 
@@ -76,7 +86,7 @@ public class TablaSimbolos {
     }
 
     public String getNombre() {
-        return nombre;
+        return this.nombre;
     }
 
     public void setNombre(String nombre) {

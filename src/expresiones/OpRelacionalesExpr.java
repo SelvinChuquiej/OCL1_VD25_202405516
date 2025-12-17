@@ -6,6 +6,7 @@ package expresiones;
 
 import AST.Expr;
 import AST.Resultado;
+import errores.Error.TipoError;
 import errores.ManejadorErrores;
 import simbolo.TablaSimbolos;
 import simbolo.TipoDato;
@@ -52,7 +53,7 @@ public class OpRelacionalesExpr extends Expr {
                 case DIFERENTE:
                     return new Resultado(TipoDato.BOOLEANO, !s1.equals(s2));
                 default:
-                    ManejadorErrores.agregar("Semantico", "No se puede aplicar el operador relacional sobre cadenas", linea, columna);
+                    ManejadorErrores.agregar(TipoError.SEMANTICO.toString(), "No se puede aplicar el operador relacional sobre cadenas", linea, columna);
                     return new Resultado(TipoDato.ERROR, null);
             }
         }
@@ -83,7 +84,7 @@ public class OpRelacionalesExpr extends Expr {
                     res = d1 >= d2;
                     break;
                 default:
-                    ManejadorErrores.agregar("Semantico", "Operador realacional desconocido", linea, columna);
+                    ManejadorErrores.agregar(TipoError.SEMANTICO.toString(), "Operador realacional desconocido", linea, columna);
                     return new Resultado(TipoDato.ERROR, null);
             }
             return new Resultado(TipoDato.BOOLEANO, res);
@@ -98,13 +99,12 @@ public class OpRelacionalesExpr extends Expr {
                 case DIFERENTE:
                     return new Resultado(TipoDato.BOOLEANO, b1 != b2);
                 default:
-                    // Si intentan hacer true > false, cae aquí
-                    ManejadorErrores.agregar("Semantico", "No se pueden aplicar operadores de orden (<, >, <=, >=) a valores booleanos", linea, columna);
+                    ManejadorErrores.agregar(TipoError.SEMANTICO.toString(), "No se pueden aplicar operadores de orden (<, >, <=, >=) a valores booleanos", linea, columna);
                     return new Resultado(TipoDato.ERROR, null);
             }
         }
 
-        ManejadorErrores.agregar("Semantico", "Tipos imcompatibles para comparar", linea, columna);
+        ManejadorErrores.agregar(TipoError.SEMANTICO.toString(), "Tipos imcompatibles para comparar", linea, columna);
         return new Resultado(TipoDato.ERROR, null);
 
     }
@@ -122,7 +122,7 @@ public class OpRelacionalesExpr extends Expr {
             case CARACTER:
                 return (double) ((Character) valor).charValue();
             default:
-                ManejadorErrores.agregar("Semantico", "No se pueden convertir el tipo " + tipo + "a numero para comparar", linea, columna);
+                ManejadorErrores.agregar(TipoError.SEMANTICO.toString(), "No se pueden convertir el tipo " + tipo + "a numero para comparar", linea, columna);
                 return 0;
         }
     }

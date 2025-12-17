@@ -6,6 +6,7 @@ package expresiones;
 
 import AST.Expr;
 import AST.Resultado;
+import errores.Error.TipoError;
 import errores.ManejadorErrores;
 import simbolo.TablaSimbolos;
 import simbolo.TipoDato;
@@ -46,7 +47,7 @@ public class OpLogicosExpr extends Expr {
 
         if (op == OpLog.NOT) {
             if (t1 != TipoDato.BOOLEANO) {
-                ManejadorErrores.agregar("Semantico", "El operador NOT solo puede aplicarse a booleanos", linea, columna);
+                ManejadorErrores.agregar(TipoError.SEMANTICO.toString(), "El operador NOT solo puede aplicarse a booleanos", linea, columna);
                 return new Resultado(TipoDato.ERROR, null);
             }
             return new Resultado(TipoDato.BOOLEANO, !((boolean) v1));
@@ -57,7 +58,7 @@ public class OpLogicosExpr extends Expr {
         TipoDato t2 = r2.getTipo();
 
         if (t1 != TipoDato.BOOLEANO || t2 != TipoDato.BOOLEANO) {
-            ManejadorErrores.agregar("Semantico", "Los operadores logicos requieren operadores booleanos", linea, columna);
+            ManejadorErrores.agregar(TipoError.SEMANTICO.toString(), "Los operadores logicos requieren operadores booleanos", linea, columna);
             return new Resultado(TipoDato.ERROR, null);
         }
 

@@ -8,58 +8,58 @@ package parser;
 /** CUP generated class containing symbol constants. */
 public class sym {
   /* terminals */
-  public static final int POT = 15;
-  public static final int POR = 12;
+  public static final int POT = 31;
+  public static final int POR = 28;
   public static final int CHAR = 5;
-  public static final int ENTERO = 45;
-  public static final int CASE = 38;
-  public static final int XOR = 26;
-  public static final int DIFERENTE = 17;
+  public static final int ENTERO = 7;
+  public static final int XOR = 44;
+  public static final int DIFERENTE = 36;
+  public static final int CASE = 19;
   public static final int DOUBLE = 3;
-  public static final int CONTINUE = 41;
-  public static final int DOS_PUNTOS = 34;
+  public static final int DOS_PUNTOS = 47;
+  public static final int CONTINUE = 25;
   public static final int INT = 2;
-  public static final int LLAVE_C = 32;
-  public static final int FOR = 43;
-  public static final int LLAVE_A = 31;
-  public static final int NOT = 25;
-  public static final int AND = 23;
-  public static final int IGUAL = 22;
-  public static final int CARACTER = 47;
-  public static final int OR = 24;
-  public static final int DIV = 13;
-  public static final int INCREMENTO = 27;
-  public static final int UMENOS = 51;
-  public static final int IF = 35;
-  public static final int ID = 49;
-  public static final int PUNTO_COMA = 33;
-  public static final int IGUAL_IGUAL = 16;
-  public static final int DECIMAL = 46;
+  public static final int LLAVE_C = 51;
+  public static final int LLAVE_A = 50;
+  public static final int FOR = 23;
+  public static final int NOT = 43;
+  public static final int AND = 41;
+  public static final int IGUAL = 45;
+  public static final int CARACTER = 9;
+  public static final int OR = 42;
+  public static final int DIV = 29;
+  public static final int INCREMENTO = 32;
+  public static final int IF = 16;
+  public static final int UMENOS = 34;
+  public static final int PUNTO_COMA = 46;
+  public static final int IGUAL_IGUAL = 35;
+  public static final int ID = 13;
   public static final int EOF = 0;
   public static final int BOOLEAN = 4;
-  public static final int TRUE = 7;
-  public static final int DECREMENTO = 28;
+  public static final int DECIMAL = 8;
+  public static final int TRUE = 11;
+  public static final int DECREMENTO = 33;
   public static final int error = 1;
-  public static final int CADENA = 48;
-  public static final int MENOS = 11;
-  public static final int MENOR = 20;
-  public static final int MOD = 14;
-  public static final int BREAK = 40;
-  public static final int SWITCH = 37;
-  public static final int MAYOR = 21;
-  public static final int ELSE = 36;
-  public static final int WHILE = 42;
-  public static final int DEFAULT = 39;
-  public static final int MAYOR_IGUAL = 19;
+  public static final int CADENA = 10;
+  public static final int MENOS = 27;
+  public static final int MENOR = 39;
+  public static final int MOD = 30;
+  public static final int BREAK = 24;
+  public static final int SWITCH = 18;
+  public static final int MAYOR = 40;
+  public static final int ELSE = 17;
+  public static final int WHILE = 21;
+  public static final int MAYOR_IGUAL = 38;
+  public static final int DEFAULT = 20;
   public static final int STRING = 6;
-  public static final int PAREN_C = 30;
-  public static final int PAREN_A = 29;
-  public static final int MENOR_IGUAL = 18;
-  public static final int FALSE = 8;
-  public static final int VAR = 50;
-  public static final int DO = 44;
-  public static final int PRINT = 9;
-  public static final int MAS = 10;
+  public static final int PAREN_C = 49;
+  public static final int PAREN_A = 48;
+  public static final int MENOR_IGUAL = 37;
+  public static final int FALSE = 12;
+  public static final int VAR = 15;
+  public static final int PRINT = 14;
+  public static final int DO = 22;
+  public static final int MAS = 26;
   public static final String[] terminalNames = new String[] {
   "EOF",
   "error",
@@ -68,51 +68,51 @@ public class sym {
   "BOOLEAN",
   "CHAR",
   "STRING",
+  "ENTERO",
+  "DECIMAL",
+  "CARACTER",
+  "CADENA",
   "TRUE",
   "FALSE",
+  "ID",
   "PRINT",
+  "VAR",
+  "IF",
+  "ELSE",
+  "SWITCH",
+  "CASE",
+  "DEFAULT",
+  "WHILE",
+  "DO",
+  "FOR",
+  "BREAK",
+  "CONTINUE",
   "MAS",
   "MENOS",
   "POR",
   "DIV",
   "MOD",
   "POT",
+  "INCREMENTO",
+  "DECREMENTO",
+  "UMENOS",
   "IGUAL_IGUAL",
   "DIFERENTE",
   "MENOR_IGUAL",
   "MAYOR_IGUAL",
   "MENOR",
   "MAYOR",
-  "IGUAL",
   "AND",
   "OR",
   "NOT",
   "XOR",
-  "INCREMENTO",
-  "DECREMENTO",
+  "IGUAL",
+  "PUNTO_COMA",
+  "DOS_PUNTOS",
   "PAREN_A",
   "PAREN_C",
   "LLAVE_A",
-  "LLAVE_C",
-  "PUNTO_COMA",
-  "DOS_PUNTOS",
-  "IF",
-  "ELSE",
-  "SWITCH",
-  "CASE",
-  "DEFAULT",
-  "BREAK",
-  "CONTINUE",
-  "WHILE",
-  "FOR",
-  "DO",
-  "ENTERO",
-  "DECIMAL",
-  "CARACTER",
-  "CADENA",
-  "ID",
-  "VAR",
-  "UMENOS"
+  "LLAVE_C"
   };
 }
 

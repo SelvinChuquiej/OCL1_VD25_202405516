@@ -7,7 +7,11 @@ package statements;
 import AST.Expr;
 import AST.Resultado;
 import AST.Stmt;
+import errores.Error.TipoError;
+import errores.ManejadorErrores;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import simbolo.TablaSimbolos;
 import simbolo.TipoDato;
 
@@ -19,65 +23,84 @@ public class SwitchStmt extends Stmt {
 
     private Expr expresion;
     private List<CaseStmt> casos;
+    private Stmt defaultStmt;
 
-    public SwitchStmt(Expr expresion, List<CaseStmt> casos, int line, int column) {
+    public SwitchStmt(Expr expresion, List<CaseStmt> casos, Stmt defaultStmt, int line, int column) {
         super(line, column);
         this.expresion = expresion;
         this.casos = casos;
+        this.defaultStmt = defaultStmt;
     }
 
     @Override
     public ControlStmt ejecutar(TablaSimbolos tabla) {
-        Resultado result = expresion.evaluar(tabla);
-        if (result.getTipo() == TipoDato.ERROR) {
+        Resultado resultSwitch = expresion.evaluar(tabla);
+        if (resultSwitch.getTipo() == TipoDato.ERROR) {
             return ControlStmt.normal();
         }
 
-        Object valSwicth = result.getValor();
-        TablaSimbolos local = new TablaSimbolos(tabla);
+        Object valorSwitch = resultSwitch.getValor();
 
-        int indiceInicio = -1;
-        int indiceDefault = -1;
+        String nombreEntorno = "Switch_" + this.linea;
+        TablaSimbolos switchEnv = new TablaSimbolos(tabla, nombreEntorno);
 
-        for (int i = 0; i < casos.size(); i++) {
-            CaseStmt c = casos.get(i);
+        Set<Object> valoresVistos = new HashSet<>();
+        boolean huboMatch = false;
 
-            if (c.getValor() == null) {
-                indiceDefault = i;
-            } else {
-                Resultado resultCase = c.getValor().evaluar(local);
-                if (sonIguales(valSwicth, resultCase.getValor())) {
-                    indiceInicio = i;
-                    break;
+        for (CaseStmt caso : casos) {
+            if (caso.getValor() == null) {
+                continue;
+            }
+
+            Resultado resCase = caso.getValor().evaluar(switchEnv);
+            if (resCase.getTipo() == TipoDato.ERROR) {
+                continue;
+            }
+
+            Object valorCase = resCase.getValor();
+
+            if (valorSwitch.getClass() != valorCase.getClass()) {
+                ManejadorErrores.agregar(TipoError.SEMANTICO.toString(), "Tipos incompatibles", caso.linea, caso.columna);
+                continue;
+            }
+            if (valoresVistos.contains(valorCase)) {
+                ManejadorErrores.agregar(TipoError.SEMANTICO.toString(), "El caso valor '" + valorCase + "' está duplicado.", caso.linea, caso.columna);
+                continue;
+            }
+            valoresVistos.add(valorCase);
+
+            if (valorSwitch.equals(valorCase) || huboMatch) {
+
+                ControlStmt res = caso.ejecutar(switchEnv);
+
+                if (res != null) {
+                    if (res.getTipo() == ControlStmt.Tipo.BREAK) {
+                        return ControlStmt.normal();
+                    }
+                    if (res.getTipo() == ControlStmt.Tipo.RETURN) {
+                        return res;
+                    }
+                    if (res.getTipo() == ControlStmt.Tipo.CONTINUE) {
+                        return res;
+                    }
                 }
+                huboMatch = true;
             }
         }
-
-        if (indiceInicio == -1) {
-            indiceInicio = indiceDefault;
-        }
-        if (indiceInicio == -1) {
-            return ControlStmt.normal();
-        }
-
-        for (int i = indiceInicio; i < casos.size(); i++) {
-            CaseStmt c = casos.get(i);
-            ControlStmt res = c.ejecutar(local);
-
-            if (res.getTipo() != ControlStmt.Tipo.NORMAL) {
+        if (!huboMatch && defaultStmt != null) {
+            ControlStmt res = defaultStmt.ejecutar(switchEnv);
+            if (res != null) {
                 if (res.getTipo() == ControlStmt.Tipo.BREAK) {
                     return ControlStmt.normal();
                 }
-                return res;
+                if (res.getTipo() == ControlStmt.Tipo.RETURN) {
+                    return res;
+                }
+                if (res.getTipo() == ControlStmt.Tipo.CONTINUE) {
+                    return res;
+                }
             }
         }
         return ControlStmt.normal();
-    }
-
-    private boolean sonIguales(Object a, Object b) {
-        if (a == null || b == null) {
-            return false;
-        }
-        return a.toString().equals(b.toString());
     }
 }

@@ -7,6 +7,8 @@ package statements;
 import AST.Expr;
 import AST.Resultado;
 import AST.Stmt;
+import errores.Error.TipoError;
+import errores.ManejadorErrores;
 import java.util.List;
 import simbolo.TablaSimbolos;
 import simbolo.TipoDato;
@@ -31,7 +33,8 @@ public class ForStmt extends Stmt {
 
     @Override
     public ControlStmt ejecutar(TablaSimbolos tabla) {
-        TablaSimbolos tablaLocal = new TablaSimbolos(tabla);
+        String nombreEntorno = "For_" + this.linea;
+        TablaSimbolos tablaLocal = new TablaSimbolos(tabla, nombreEntorno);
         inicializacion.ejecutar(tablaLocal);
 
         while (true) {
@@ -39,14 +42,19 @@ public class ForStmt extends Stmt {
             if (resCond.getTipo() == TipoDato.ERROR) {
                 return ControlStmt.normal();
             }
+            if (!(resCond.getValor() instanceof Boolean)) {
+                ManejadorErrores.agregar(TipoError.SEMANTICO.toString(), "La condicion del For debe ser booleana", this.linea, this.columna);
+                return ControlStmt.normal();
+            }
             if (!(boolean) resCond.getValor()) {
                 break;
             }
 
+            TablaSimbolos tablaIter = new TablaSimbolos(tablaLocal, nombreEntorno + "_iter");
             boolean rompePorContinue = false;
 
             for (Stmt s : bloque) {
-                ControlStmt res = s.ejecutar(tablaLocal);
+                ControlStmt res = s.ejecutar(tablaIter);
                 if (res.getTipo() != ControlStmt.Tipo.NORMAL) {
                     if (res.getTipo() == ControlStmt.Tipo.BREAK) {
                         return ControlStmt.normal();

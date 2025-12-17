@@ -18,11 +18,11 @@ public class NodoAST {
         this.columna = columna;
     }
 
-    public int getLine() {
+    public int getLinea() {
         return linea;
     }
 
-    public int getColumn() {
+    public int getColumna() {
         return columna;
     }
 
