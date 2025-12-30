@@ -950,6 +950,10 @@ public class Parser extends java_cup.runtime.lr_parser {
         String mensaje = "Error Sintáctico Fatal (Irrecuperable): Se detuvo en '" + lexema + "'";     
         ManejadorErrores.agregar(TipoError.SINTACTICO.toString(), mensaje, linea, columna);    
     }
+    public List<Stmt> ast;
+    public List<Stmt> getAST(){
+            return this.ast;
+    }
 
 
 /** Cup generated class to encapsulate user supplied action code.*/
@@ -1001,7 +1005,7 @@ class CUP$Parser$actions {
 		int lsleft = ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()).left;
 		int lsright = ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()).right;
 		List ls = (List)((java_cup.runtime.Symbol) CUP$Parser$stack.peek()).value;
-		 RESULT = ls; 
+		 parser.ast = ls; RESULT = ls; 
               CUP$Parser$result = parser.getSymbolFactory().newSymbol("inicio",0, ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()), ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()), RESULT);
             }
           return CUP$Parser$result;

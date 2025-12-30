@@ -77,4 +77,12 @@ public class VectorAccessExpr extends Expr {
             return new Resultado(TipoDato.ERROR, null);
         }
     }
+
+    @Override
+    public String getDot(StringBuilder dot) {
+        String nombreNodo = "nodoVecAcc" + this.hashCode();
+        dot.append(nombreNodo).append("[label=\"ACCESO VECTOR: ").append(id).append("\"];\n");
+        dot.append(nombreNodo).append(" -> ").append(indice.getDot(dot)).append(";\n");
+        return nombreNodo;
+    }
 }

@@ -63,4 +63,21 @@ public class WhileStmt extends Stmt {
         }
         return ControlStmt.normal();
     }
+
+    @Override
+    public String getDot(StringBuilder dot) {
+        String nombreNodo = "nodoWhile" + this.hashCode();
+        dot.append(nombreNodo).append("[label=\"WHILE\", fillcolor=\"#fff9c4\", style=filled];\n");
+
+        dot.append(nombreNodo).append(" -> ").append(expresion.getDot(dot)).append(" [label=\"condicion\"];\n");
+
+        String nodoCuerpo = "nodoCuerpoWhile" + this.hashCode();
+        dot.append(nodoCuerpo).append("[label=\"CUERPO\", shape=folder];\n");
+        dot.append(nombreNodo).append(" -> ").append(nodoCuerpo).append(";\n");
+
+        for (Stmt s : bloque) {
+            dot.append(nodoCuerpo).append(" -> ").append(s.getDot(dot)).append(";\n");
+        }
+        return nombreNodo;
+    }
 }

@@ -56,4 +56,21 @@ public class Vector2DAsigStmt extends Stmt {
 
         return ControlStmt.normal();
     }
+
+    @Override
+    public String getDot(StringBuilder dot) {
+        String nombreNodo = "nodoVec2DAsig" + this.hashCode();
+        dot.append(nombreNodo).append("[label=\"ASIG. MATRIZ: " + id + "\", shape=box, color=darkgreen];\n");
+
+        // Conexión al índice de la fila
+        dot.append(nombreNodo).append(" -> ").append(indiceF.getDot(dot)).append(" [label=\"fila\"];\n");
+
+        // Conexión al índice de la columna
+        dot.append(nombreNodo).append(" -> ").append(indiceC.getDot(dot)).append(" [label=\"columna\"];\n");
+
+        // Conexión a la expresión (el valor a asignar)
+        dot.append(nombreNodo).append(" -> ").append(expresion.getDot(dot)).append(" [label=\"valor\"];\n");
+
+        return nombreNodo;
+    }
 }

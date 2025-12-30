@@ -18,8 +18,8 @@ public abstract class Stmt extends NodoAST {
     public Stmt(int line, int column) {
         super(line, column);
     }
-
+  
     public abstract ControlStmt ejecutar(TablaSimbolos tabla);
- 
+
+    public abstract String getDot(StringBuilder dot);
 }
- 

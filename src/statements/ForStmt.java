@@ -72,4 +72,29 @@ public class ForStmt extends Stmt {
         }
         return ControlStmt.normal();
     }
+
+    @Override
+    public String getDot(StringBuilder dot) {
+        String nombreNodo = "nodoFor" + this.hashCode();
+        dot.append(nombreNodo).append("[label=\"FOR\"];\n");
+
+        // 1. Inicialización
+        dot.append(nombreNodo).append(" -> ").append(inicializacion.getDot(dot)).append("[label=\"init\"];\n");
+
+        // 2. Condición
+        dot.append(nombreNodo).append(" -> ").append(condicion.getDot(dot)).append("[label=\"cond\"];\n");
+
+        // 3. Actualización
+        dot.append(nombreNodo).append(" -> ").append(actualizacion.getDot(dot)).append("[label=\"update\"];\n");
+
+        // 4. Cuerpo del For
+        String nodoCuerpo = "nodoCuerpoFor" + this.hashCode();
+        dot.append(nodoCuerpo).append("[label=\"BLOQUE\", shape=circle];\n");
+        dot.append(nombreNodo).append(" -> ").append(nodoCuerpo).append(";\n");
+        for (Stmt s : bloque) {
+            dot.append(nodoCuerpo).append(" -> ").append(s.getDot(dot)).append(";\n");
+        }
+
+        return nombreNodo;
+    }
 }

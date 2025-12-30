@@ -284,4 +284,13 @@ public class OpAritmeticosExpr extends Expr {
         ManejadorErrores.agregar(TipoError.SEMANTICO.toString(), "No se puede sumar ", linea, columna);
         return new Resultado(TipoDato.ERROR, null);
     }
+
+    @Override
+    public String getDot(StringBuilder dot) {
+        String nombreNodo = "nodoArit" + this.hashCode();
+        dot.append(nombreNodo).append("[label=\"ARITMETICA: ").append(this.op).append("\"];\n");
+        dot.append(nombreNodo).append(" -> ").append(izq.getDot(dot)).append(";\n");
+        dot.append(nombreNodo).append(" -> ").append(der.getDot(dot)).append(";\n");
+        return nombreNodo;
+    }
 }

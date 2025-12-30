@@ -54,4 +54,32 @@ public class IfStmt extends Stmt {
         }
         return ControlStmt.normal();
     }
+
+    @Override
+    public String getDot(StringBuilder dot) {
+        String nombreNodo = "nodoIf" + this.hashCode();
+        dot.append(nombreNodo).append("[label=\"IF\"];\n");
+
+        // Rama de la condición
+        dot.append(nombreNodo).append(" -> ").append(expresion.getDot(dot)).append("[label=\"condicion\"];\n");
+
+        // Rama Then (Verdadero)
+        String nodoThen = "nodoThen" + this.hashCode();
+        dot.append(nodoThen).append("[label=\"THEN\", shape=circle, width=0.5];\n");
+        dot.append(nombreNodo).append(" -> ").append(nodoThen).append(";\n");
+        for (Stmt s : thenBlock) {
+            dot.append(nodoThen).append(" -> ").append(s.getDot(dot)).append(";\n");
+        }
+
+        // Rama Else (Falso) - Solo si existe
+        if (elseBlock != null && !elseBlock.isEmpty()) {
+            String nodoElse = "nodoElse" + this.hashCode();
+            dot.append(nodoElse).append("[label=\"ELSE\", shape=circle, width=0.5];\n");
+            dot.append(nombreNodo).append(" -> ").append(nodoElse).append(";\n");
+            for (Stmt s : elseBlock) {
+                dot.append(nodoElse).append(" -> ").append(s.getDot(dot)).append(";\n");
+            }
+        }
+        return nombreNodo;
+    }
 }

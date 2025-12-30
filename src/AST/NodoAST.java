@@ -8,7 +8,7 @@ package AST;
  *
  * @author Selvi
  */
-public class NodoAST {
+public abstract class NodoAST {
 
     public int linea;
     public int columna;
@@ -25,5 +25,6 @@ public class NodoAST {
     public int getColumna() {
         return columna;
     }
-
+    
+    public abstract String getDot(StringBuilder dot);
 }

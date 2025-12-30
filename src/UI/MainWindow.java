@@ -4,6 +4,8 @@
  */
 package UI;
 
+import AST.NodoAST;
+import AST.RaizAST;
 import AST.Stmt;
 import errores.ManejadorErrores;
 import java.io.StringReader;
@@ -20,6 +22,7 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java_cup.parser;
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
 import javax.swing.filechooser.FileNameExtensionFilter;
@@ -30,6 +33,7 @@ import statements.Vector2DDeclStmt;
 import statements.VectorDeclStmt;
 import tokens.ReporteTabla;
 import util.Editor;
+import util.GenerarAst;
 
 /**
  *
@@ -70,6 +74,8 @@ public class MainWindow extends javax.swing.JFrame {
         jMenu3 = new javax.swing.JMenu();
         jMenuItem5 = new javax.swing.JMenuItem();
         jMenuItem1 = new javax.swing.JMenuItem();
+        jMenu4 = new javax.swing.JMenu();
+        jMenuItem6 = new javax.swing.JMenuItem();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -138,6 +144,18 @@ public class MainWindow extends javax.swing.JFrame {
         jMenu3.add(jMenuItem1);
 
         jMenuBar1.add(jMenu3);
+
+        jMenu4.setText("AST");
+
+        jMenuItem6.setText("Ejecutar AST");
+        jMenuItem6.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jMenuItem6ActionPerformed(evt);
+            }
+        });
+        jMenu4.add(jMenuItem6);
+
+        jMenuBar1.add(jMenu4);
 
         setJMenuBar(jMenuBar1);
 
@@ -215,7 +233,7 @@ public class MainWindow extends javax.swing.JFrame {
                             }
                         }
                     }
-                    
+
                     for (Stmt stmt : listaStmt) {
                         if (stmt != null && stmt instanceof StartStmt) {
                             try {
@@ -322,6 +340,52 @@ public class MainWindow extends javax.swing.JFrame {
         Editor.clear();
     }//GEN-LAST:event_jMenuItem5ActionPerformed
 
+    private void jMenuItem6ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem6ActionPerformed
+        try {
+            // 1. Limpiar reportes previos
+            ManejadorErrores.limpiar();
+
+            String texto = jTextArea1.getText();
+            if (texto.trim().isEmpty()) {
+                return;
+            }
+
+            // 2. Análisis léxico y sintáctico
+            Lexer lexer = new Lexer(new java.io.StringReader(texto));
+            Parser parser = new Parser(lexer);
+
+            // El resultado de CUP viene en un objeto Symbol
+            java_cup.runtime.Symbol resultadoCUP = parser.parse();
+
+            // 3. Validación de errores
+            if (ManejadorErrores.hayErrores()) {
+                JOptionPane.showMessageDialog(this, "No se puede graficar: El código tiene errores.");
+                return;
+            }
+
+            // 4. Obtener la lista de instrucciones y crear la Raíz
+            // Asumiendo que tu parser devuelve un List<Stmt> en la producción inicial
+            if (resultadoCUP != null && resultadoCUP.value != null) {
+
+                List<Stmt> instrucciones = (List<Stmt>) resultadoCUP.value;
+                RaizAST raiz = new RaizAST(instrucciones); // Envolvemos la lista en el nodo Raiz
+
+                // 5. Generar el archivo .dot
+                // Usamos la clase de utilidad que definimos antes
+                util.GenerarAst.generar(raiz);
+
+                JOptionPane.showMessageDialog(this, "Gráfico AST generado exitosamente (ast.dot / ast.png)");
+            } else {
+                JOptionPane.showMessageDialog(this, "El parser no devolvió ninguna estructura.");
+            }
+
+        } catch (Exception e) {
+            System.err.println("Error al generar AST: " + e.getMessage());
+            e.printStackTrace();
+            JOptionPane.showMessageDialog(this, "Error crítico: " + e.getMessage());
+        }
+    }//GEN-LAST:event_jMenuItem6ActionPerformed
+
     /**
      * @param args the command line arguments
      */
@@ -363,12 +427,14 @@ public class MainWindow extends javax.swing.JFrame {
     private javax.swing.JMenu jMenu1;
     private javax.swing.JMenu jMenu2;
     private javax.swing.JMenu jMenu3;
+    private javax.swing.JMenu jMenu4;
     private javax.swing.JMenuBar jMenuBar1;
     private javax.swing.JMenuItem jMenuItem1;
     private javax.swing.JMenuItem jMenuItem2;
     private javax.swing.JMenuItem jMenuItem3;
     private javax.swing.JMenuItem jMenuItem4;
     private javax.swing.JMenuItem jMenuItem5;
+    private javax.swing.JMenuItem jMenuItem6;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JTextArea jTextArea1;

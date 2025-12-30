@@ -71,11 +71,22 @@ public class OpLogicosExpr extends Expr {
             case OR:
                 return new Resultado(TipoDato.BOOLEANO, b1 || b2);
             case XOR:
-                 return new Resultado(TipoDato.BOOLEANO, b1 ^ b2);
+                return new Resultado(TipoDato.BOOLEANO, b1 ^ b2);
             default:
                 ManejadorErrores.agregar("Semantico", "Operador logico desconocido " + op, linea, columna);
                 return new Resultado(TipoDato.ERROR, null);
         }
+    }
+    
+    @Override
+    public String getDot(StringBuilder dot) {
+        String nombreNodo = "nodoLog" + this.hashCode();
+        dot.append(nombreNodo).append("[label=\"LOGICA: ").append(this.op).append("\"];\n");
+        dot.append(nombreNodo).append(" -> ").append(izq.getDot(dot)).append(";\n");
+        if (der != null) { // Para AND, OR, XOR
+            dot.append(nombreNodo).append(" -> ").append(der.getDot(dot)).append(";\n");
+        }
+        return nombreNodo;
     }
 
 }

@@ -13,7 +13,6 @@ import simbolo.TipoDato;
  *
  * @author Selvi
  */
-
 public class ValorExpr extends Expr {
 
     private TipoDato tipo;
@@ -30,4 +29,12 @@ public class ValorExpr extends Expr {
         return new Resultado(tipo, valor);
     }
 
+    @Override
+    public String getDot(StringBuilder dot) {
+        String nombreNodo = "nodoValor" + this.hashCode();
+        // Reemplazamos comillas para evitar errores en el archivo DOT
+        String val = valor.toString().replace("\"", "\\\"");
+        dot.append(nombreNodo).append("[label=\"LITERAL: ").append(val).append("\"];\n");
+        return nombreNodo;
+    }
 }

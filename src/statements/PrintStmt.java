@@ -34,4 +34,15 @@ public class PrintStmt extends Stmt {
         return ControlStmt.normal();
     }
 
+    @Override
+    public String getDot(StringBuilder dot) {
+        String nombreNodo = "nodoPrint" + this.hashCode();
+        dot.append(nombreNodo).append("[label=\"PRINT\"];\n");
+
+        // Conectamos con el hijo (lo que se va a imprimir)
+        dot.append(nombreNodo).append(" -> ").append(expresion.getDot(dot)).append(";\n");
+
+        return nombreNodo;
+    }
+
 }

@@ -22,4 +22,10 @@ public class ContinueStmt extends Stmt {
         return ControlStmt.cont();
     }
 
+    @Override
+    public String getDot(StringBuilder dot) {
+        String nombreNodo = "nodoContinue" + this.hashCode();
+        dot.append(nombreNodo).append("[label=\"CONTINUE\", fillcolor=\"#ffcccc\"];\n");
+        return nombreNodo;
+    }
 }

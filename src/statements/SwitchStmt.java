@@ -103,4 +103,25 @@ public class SwitchStmt extends Stmt {
         }
         return ControlStmt.normal();
     }
+
+    @Override
+    public String getDot(StringBuilder dot) {
+        String nombreNodo = "nodoSwitch" + this.hashCode();
+        dot.append(nombreNodo).append("[label=\"SWITCH\"];\n");
+
+        // Flecha a la expresión que se evalúa
+        dot.append(nombreNodo).append(" -> ").append(expresion.getDot(dot)).append(" [label=\"evalua\"];\n");
+
+        // Flechas a cada caso
+        for (CaseStmt caso : casos) {
+            dot.append(nombreNodo).append(" -> ").append(caso.getDot(dot)).append(";\n");
+        }
+
+        // Flecha al default si existe
+        if (defaultStmt != null) {
+            dot.append(nombreNodo).append(" -> ").append(defaultStmt.getDot(dot)).append(" [label=\"default\"];\n");
+        }
+
+        return nombreNodo;
+    }
 }

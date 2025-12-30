@@ -20,7 +20,7 @@ public class ControlStmt {
     }
 
     public final Tipo tipo;
-    public final Resultado resultRetorno; 
+    public final Resultado resultRetorno;
 
     public ControlStmt(Tipo tipo) {
         this.tipo = tipo;

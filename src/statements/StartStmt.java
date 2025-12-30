@@ -14,7 +14,8 @@ import simbolo.TablaSimbolos;
  *
  * @author Selvi
  */
-public class StartStmt extends Stmt{
+public class StartStmt extends Stmt {
+
     private String id;
     private List<Expr> argumentos;
 
@@ -23,13 +24,25 @@ public class StartStmt extends Stmt{
         this.id = id;
         this.argumentos = argumentos;
     }
-    
+
     @Override
-    public ControlStmt ejecutar(TablaSimbolos tabla){
+    public ControlStmt ejecutar(TablaSimbolos tabla) {
         CallExpr llamada = new CallExpr(id, argumentos, linea, columna);
         llamada.evaluar(tabla);
         return null;
     }
-    
-    
+
+    @Override
+    public String getDot(StringBuilder dot) {
+        String nombreNodo = "nodoStart" + this.hashCode();
+        dot.append(nombreNodo).append("[label=\"START WITH: " + id + "\", shape=doubleoctagon, fillcolor=orange, style=filled];\n");
+
+        if (argumentos != null) {
+            for (Expr arg : argumentos) {
+                dot.append(nombreNodo).append(" -> ").append(arg.getDot(dot)).append(" [label=\"param\"];\n");
+            }
+        }
+        return nombreNodo;
+    }
+
 }

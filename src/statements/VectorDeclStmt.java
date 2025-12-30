@@ -44,4 +44,15 @@ public class VectorDeclStmt extends Stmt {
         return null;
     }
 
+    @Override
+    public String getDot(StringBuilder dot) {
+        String nombreNodo = "nodoVecDecl" + this.hashCode();
+        dot.append(nombreNodo).append("[label=\"VECTOR: " + id + "\\nTipo: " + tipoBase + "\", shape=folder];\n");
+
+        for (Expr e : valoresIniciales) {
+            dot.append(nombreNodo).append(" -> ").append(e.getDot(dot)).append(";\n");
+        }
+        return nombreNodo;
+    }
+
 }

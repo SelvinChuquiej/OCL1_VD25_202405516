@@ -43,4 +43,17 @@ public class NegacionExpr extends Expr {
         return new Resultado(TipoDato.ERROR, null);
     }
 
+    @Override
+    public String getDot(StringBuilder dot) {
+        String nombreNodo = "nodoNeg" + this.hashCode();
+        String etiqueta = "NEGACION";
+        dot.append(nombreNodo).append("[label=\"").append(etiqueta).append("\"];\n");
+
+        String hijo = expresion.getDot(dot);
+        dot.append(nombreNodo).append(" -> ").append(hijo).append(";\n");
+
+        return nombreNodo;
+
+    }
+
 }

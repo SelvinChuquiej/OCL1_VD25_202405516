@@ -127,4 +127,14 @@ public class OpRelacionalesExpr extends Expr {
         }
     }
 
+
+    @Override
+    public String getDot(StringBuilder dot) {
+        String nombreNodo = "nodoRel" + this.hashCode();
+        dot.append(nombreNodo).append("[label=\"RELACIONAL: ").append(this.op).append("\"];\n");
+        dot.append(nombreNodo).append(" -> ").append(izq.getDot(dot)).append(";\n");
+        dot.append(nombreNodo).append(" -> ").append(der.getDot(dot)).append(";\n");
+        return nombreNodo;
+    }
+
 }

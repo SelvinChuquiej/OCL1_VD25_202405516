@@ -50,4 +50,15 @@ public class AsigStmt extends Stmt {
         ReporteTabla.agregar(simbolo);
         return ControlStmt.normal();
     }
+
+    @Override
+    public String getDot(StringBuilder dot) {
+        String nombreNodo = "nodoAsig" + this.hashCode();
+        dot.append(nombreNodo).append("[label=\"ASIGNACION: ").append(this.id).append("\"];\n");
+
+        // Conectamos con el nodo de la expresión que se está asignando
+        dot.append(nombreNodo).append(" -> ").append(expresion.getDot(dot)).append(";\n");
+
+        return nombreNodo;
+    }
 }

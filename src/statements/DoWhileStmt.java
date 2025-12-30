@@ -64,4 +64,23 @@ public class DoWhileStmt extends Stmt {
         } while (true);
         return ControlStmt.normal();
     }
+    @Override
+    public String getDot(StringBuilder dot) {
+        String nombreNodo = "nodoDoWhile" + this.hashCode();
+        dot.append(nombreNodo).append("[label=\"DO WHILE\"];\n");
+
+        // Nodo intermedio para el cuerpo del bucle
+        String nodoCuerpo = "nodoCuerpoDo" + this.hashCode();
+        dot.append(nodoCuerpo).append("[label=\"CUERPO\", shape=point];\n");
+        dot.append(nombreNodo).append(" -> ").append(nodoCuerpo).append(";\n");
+
+        for (Stmt s : bloque) {
+            dot.append(nodoCuerpo).append(" -> ").append(s.getDot(dot)).append(";\n");
+        }
+
+        // Condición al final
+        dot.append(nombreNodo).append(" -> ").append(condicion.getDot(dot)).append("[label=\"condicion\"];\n");
+
+        return nombreNodo;
+    }
 }

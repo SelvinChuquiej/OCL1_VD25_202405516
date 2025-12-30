@@ -102,4 +102,20 @@ public class MethodCallStmt extends Expr {
         this.evaluar(tabla);
         return ControlStmt.normal();
     }
+
+    @Override
+    public String getDot(StringBuilder dot) {
+        String nombreNodo = "nodoMethodCall" + this.hashCode();
+        // Ejemplo: lista.add(valor)
+        String etiqueta = "METODO: " + this.idLista + "." + this.metodo;
+        dot.append(nombreNodo).append("[label=\"").append(etiqueta).append("\"];\n");
+
+        // Graficamos los argumentos
+        if (argumentos != null && !argumentos.isEmpty()) {
+            for (Expr arg : argumentos) {
+                dot.append(nombreNodo).append(" -> ").append(arg.getDot(dot)).append("[label=\"arg\"];\n");
+            }
+        }
+        return nombreNodo;
+    }
 }

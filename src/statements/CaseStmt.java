@@ -38,4 +38,31 @@ public class CaseStmt extends Stmt {
         }
         return ControlStmt.normal();
     }
+
+
+    @Override
+    public String getDot(StringBuilder dot) {
+        String nombreNodo = "nodoCase" + this.hashCode();
+        String etiqueta = (valor == null) ? "DEFAULT" : "CASE";
+
+        dot.append(nombreNodo).append("[label=\"").append(etiqueta).append("\"];\n");
+
+        // Si es un CASE, graficar el valor a comparar
+        if (valor != null) {
+            dot.append(nombreNodo).append(" -> ").append(valor.getDot(dot)).append("[label=\"valor\"];\n");
+        }
+
+        // Graficar el bloque de instrucciones dentro del caso
+        if (bloque != null && !bloque.isEmpty()) {
+            String nodoCuerpo = "nodoCuerpoCase" + this.hashCode();
+            dot.append(nodoCuerpo).append("[label=\"CUERPO\", shape=circle];\n");
+            dot.append(nombreNodo).append(" -> ").append(nodoCuerpo).append(";\n");
+
+            for (Stmt s : bloque) {
+                dot.append(nodoCuerpo).append(" -> ").append(s.getDot(dot)).append(";\n");
+            }
+        }
+
+        return nombreNodo;
+    }
 }

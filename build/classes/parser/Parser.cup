@@ -45,6 +45,10 @@ parser code {:
         String mensaje = "Error Sintáctico Fatal (Irrecuperable): Se detuvo en '" + lexema + "'";     
         ManejadorErrores.agregar(TipoError.SINTACTICO.toString(), mensaje, linea, columna);    
     }
+    public List<Stmt> ast;
+    public List<Stmt> getAST(){
+            return this.ast;
+    }
 :};
 
 action code {:
@@ -103,7 +107,7 @@ start with inicio;
 
 //Inicio
 inicio ::=
-    lista_sentencias:ls     {: RESULT = ls; :}
+    lista_sentencias:ls     {: parser.ast = ls; RESULT = ls; :}
     ;
 
 lista_sentencias ::=

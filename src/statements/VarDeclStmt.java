@@ -15,39 +15,39 @@ import simbolo.TablaSimbolos;
 import simbolo.TipoDato;
 
 /**
- * 
+ *
  * @author Selvi
  */
 public class VarDeclStmt extends Stmt {
-    
+
     private TipoDato tipo;
     private String id;
     private Expr expresion;
-    
+
     public VarDeclStmt(TipoDato tipo, String id, Expr expresion, int line, int column) {
         super(line, column);
         this.tipo = tipo;
         this.id = id;
         this.expresion = expresion;
     }
-    
+
     public VarDeclStmt(TipoDato tipo, String id, int line, int column) {
         super(line, column);
         this.tipo = tipo;
         this.id = id;
         this.expresion = null;
     }
-    
+
     @Override
     public ControlStmt ejecutar(TablaSimbolos tabla) {
         Object valorFinal = null;
-        
+
         if (expresion != null) {
             Resultado res = expresion.evaluar(tabla);
             if (res == null || res.getTipo() == TipoDato.ERROR) {
                 return ControlStmt.normal();
             }
-            
+
             if (this.tipo != res.getTipo()) {
                 ManejadorErrores.agregar(TipoError.SEMANTICO.toString(), "No se puede asignar un valor de tipo "
                         + res.getTipo() + " a la variable " + id + " de tipo " + this.tipo, linea, columna);
@@ -65,10 +65,10 @@ public class VarDeclStmt extends Stmt {
         } else {
             ManejadorErrores.agregar(TipoError.SEMANTICO.toString(), "La variable '" + this.id + "' ya existe en este entorno", linea, columna);
         }
-        
+
         return ControlStmt.normal();
     }
-    
+
     private Object valorPorDefecto(TipoDato tipo) {
         switch (tipo) {
             case ENTERO:
@@ -84,5 +84,17 @@ public class VarDeclStmt extends Stmt {
             default:
                 return null;
         }
+    }
+
+    @Override
+    public String getDot(StringBuilder dot) {
+        String nombreNodo = "nodoVarDecl" + this.hashCode();
+        String etiqueta = "DECLARACION\\nID: " + this.id + "\\nTipo: " + this.tipo;
+        dot.append(nombreNodo).append("[label=\"").append(etiqueta).append("\", shape=box, color=blue];\n");
+
+        if (this.expresion != null) {
+            dot.append(nombreNodo).append(" -> ").append(this.expresion.getDot(dot)).append(" [label=\"valor inicial\"];\n");
+        }
+        return nombreNodo;
     }
 }

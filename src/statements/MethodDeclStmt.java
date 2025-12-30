@@ -46,4 +46,37 @@ public class MethodDeclStmt extends Stmt {
         global.guardarFuncion(this.id, this);
         return null;
     }
+
+    @Override
+    public String getDot(StringBuilder dot) {
+        String nombreNodo = "nodoMethodDecl" + this.hashCode();
+        String label = "METODO: " + this.id + "\\nTipo: " + this.tipoRetorno;
+        dot.append(nombreNodo).append("[label=\"").append(label).append("\", fillcolor=\"#ccffcc\", style=filled];\n");
+
+        // 1. Graficar Parámetros
+        if (parametros != null && !parametros.isEmpty()) {
+            String nodoParams = "nodoParams" + this.hashCode();
+            dot.append(nodoParams).append("[label=\"PARAMETROS\", shape=diamond];\n");
+            dot.append(nombreNodo).append(" -> ").append(nodoParams).append(";\n");
+
+            for (Param p : parametros) {
+                String nodoP = "nodoP" + this.hashCode();
+                dot.append(nodoP).append("[label=\"").append(p.id).append(" (").append(p.tipo).append(")\"];\n");
+                dot.append(nodoParams).append(" -> ").append(nodoP).append(";\n");
+            }
+        }
+
+        // 2. Graficar Instrucciones (Cuerpo)
+        if (instrucciones != null && !instrucciones.isEmpty()) {
+            String nodoCuerpo = "nodoCuerpoMetodo" + this.hashCode();
+            dot.append(nodoCuerpo).append("[label=\"INSTRUCCIONES\", shape=folder];\n");
+            dot.append(nombreNodo).append(" -> ").append(nodoCuerpo).append(";\n");
+
+            for (Stmt s : instrucciones) {
+                dot.append(nodoCuerpo).append(" -> ").append(s.getDot(dot)).append(";\n");
+            }
+        }
+
+        return nombreNodo;
+    }
 }

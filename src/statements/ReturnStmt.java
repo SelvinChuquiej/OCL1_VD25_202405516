@@ -35,4 +35,17 @@ public class ReturnStmt extends Stmt {
         }
         throw new ReturnException(valor);
     }
+
+    @Override
+    public String getDot(StringBuilder dot) {
+        String nombreNodo = "nodoReturn" + this.hashCode();
+        dot.append(nombreNodo).append("[label=\"RETURN\"];\n");
+
+        // Solo graficamos la flecha si hay algo que retornar
+        if (expresion != null) {
+            dot.append(nombreNodo).append(" -> ").append(expresion.getDot(dot)).append(";\n");
+        }
+
+        return nombreNodo;
+    }
 }

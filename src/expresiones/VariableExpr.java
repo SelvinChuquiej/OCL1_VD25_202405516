@@ -29,7 +29,7 @@ public class VariableExpr extends Expr {
     @Override
     public Resultado evaluar(TablaSimbolos tabla) {
         Simbolo sim = tabla.obtenerVariable(id);
-        
+
         if (sim == null) {
             ManejadorErrores.agregar(TipoError.SEMANTICO.toString(), "La variable '" + id + "' no existe en este entorno", linea, columna);
             return new Resultado(TipoDato.ERROR, null);
@@ -37,4 +37,10 @@ public class VariableExpr extends Expr {
         return new Resultado(sim.getTipo(), sim.getValor());
     }
 
+    @Override
+    public String getDot(StringBuilder dot) {
+        String nombreNodo = "nodoVar" + this.hashCode();
+        dot.append(nombreNodo).append("[label=\"VARIABLE: ").append(id).append("\"];\n");
+        return nombreNodo;
+    }
 }

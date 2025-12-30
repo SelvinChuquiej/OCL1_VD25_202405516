@@ -22,4 +22,12 @@ public class BreakStmt extends Stmt {
         return ControlStmt.brk();
     }
 
+
+    @Override
+    public String getDot(StringBuilder dot) {
+        String nombreNodo = "nodoBreak" + this.hashCode();
+        dot.append(nombreNodo).append("[label=\"BREAK\", fillcolor=\"#ffcccc\"];\n");
+        return nombreNodo;
+    }
+
 }

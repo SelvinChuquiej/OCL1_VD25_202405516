@@ -42,6 +42,19 @@ public class CastExpr extends Expr {
 
     }
 
+    @Override
+    public String getDot(StringBuilder dot) {
+        String nombreNodo = "nodoCast" + this.hashCode();
+        String etiqueta = "CAST (" + tipoDestino + ")";
+        dot.append(nombreNodo).append("[label=\"").append(etiqueta).append("\"];\n");
+
+        String hijo = expresion.getDot(dot);
+        dot.append(nombreNodo).append(" -> ").append(hijo).append(";\n");
+
+        return nombreNodo;
+
+    }
+
     private boolean esCasteoPermitido(TipoDato origen, TipoDato destino) {
         return (origen == TipoDato.ENTERO && destino == TipoDato.DECIMAL)
                 || (origen == TipoDato.ENTERO && destino == TipoDato.CADENA)
@@ -85,4 +98,5 @@ public class CastExpr extends Expr {
         ManejadorErrores.agregar("Semantico", "Casteo no implementado de " + origen + " a " + destino, linea, columna);
         return new Resultado(TipoDato.ERROR, null);
     }
+
 }

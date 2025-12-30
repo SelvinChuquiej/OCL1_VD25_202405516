@@ -35,4 +35,12 @@ public class ListDeclStmt extends Stmt {
         }
         return null;
     }
+
+    @Override
+    public String getDot(StringBuilder dot) {
+        String nombreNodo = "nodoListDecl" + this.hashCode();
+        String etiqueta = "DECLARACION LISTA\\nID: " + this.id + "\\nTipo: " + this.tipoContenido;
+        dot.append(nombreNodo).append("[label=\"").append(etiqueta).append("\", shape=box, fillcolor=\"#e1f5fe\", style=filled];\n");
+        return nombreNodo;
+    }
 }

@@ -70,4 +70,13 @@ public class VectorAsigStmt extends Stmt {
         return ControlStmt.normal();
     }
 
+    @Override
+    public String getDot(StringBuilder dot) {
+        String nombreNodo = "nodoVecAsig" + this.hashCode();
+        dot.append(nombreNodo).append("[label=\"ASIG. VECTOR: " + id + "\"];\n");
+        dot.append(nombreNodo).append(" -> ").append(indice.getDot(dot)).append(" [label=\"indice\"];\n");
+        dot.append(nombreNodo).append(" -> ").append(expresion.getDot(dot)).append(" [label=\"valor\"];\n");
+        return nombreNodo;
+    }
+
 }

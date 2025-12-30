@@ -70,4 +70,14 @@ public class Vector2DAccessExpr extends Expr {
             return new Resultado(TipoDato.ERROR, null);
         }
     }
+
+
+    @Override
+    public String getDot(StringBuilder dot) {
+        String nombreNodo = "nodoMatAcc" + this.hashCode();
+        dot.append(nombreNodo).append("[label=\"ACCESO MATRIZ: ").append(id).append("\"];\n");
+        dot.append(nombreNodo).append(" -> ").append(indiceFila.getDot(dot)).append("[label=\"Fila\"];\n");
+        dot.append(nombreNodo).append(" -> ").append(indiceCol.getDot(dot)).append("[label=\"Columna\"];\n");
+        return nombreNodo;
+    }
 }

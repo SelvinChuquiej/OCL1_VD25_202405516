@@ -69,4 +69,12 @@ public class IncDecStmt extends Stmt {
         sim.setValor(nuevoValor);
         return ControlStmt.normal();
     }
+
+    @Override
+    public String getDot(StringBuilder dot) {
+        String nombreNodo = "nodoIncDec" + this.hashCode();
+        String simbolo = (op == OpIncDec.INCREMENTO) ? "++" : "--";
+        dot.append(nombreNodo).append("[label=\"").append(this.id).append(simbolo).append("\"];\n");
+        return nombreNodo;
+    }
 }

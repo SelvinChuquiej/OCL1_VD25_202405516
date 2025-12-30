@@ -59,4 +59,21 @@ public class Vector2DDeclStmt extends Stmt {
 
         return null;
     }
+
+    @Override
+    public String getDot(StringBuilder dot) {
+        String nombreNodo = "nodoMatrizDecl" + this.hashCode();
+        dot.append(nombreNodo).append("[label=\"MATRIZ: " + id + "\\nTipo: " + tipoBase + "\", shape=grid];\n");
+
+        int numFila = 0;
+        for (List<Expr> fila : valores) {
+            String nodoFila = "nodoFila" + this.hashCode();
+            dot.append(nodoFila).append("[label=\"Fila " + (numFila++) + "\", shape=ellipse];\n");
+            dot.append(nombreNodo).append(" -> ").append(nodoFila).append(";\n");
+            for (Expr e : fila) {
+                dot.append(nodoFila).append(" -> ").append(e.getDot(dot)).append(";\n");
+            }
+        }
+        return nombreNodo;
+    }
 }

@@ -140,6 +140,19 @@ public class CallExpr extends Expr {
 
     }
 
+    @Override
+    public String getDot(StringBuilder dot) {
+        String nombreNodo = "nodo" + this.hashCode();
+        String etiqueta = "Llamada funcion: " + this.id;
+        dot.append(nombreNodo).append("[label=\"").append(etiqueta).append("\"];\n");
+
+        for (Expr arg : argumentos) {
+            String nombreHijo = arg.getDot(dot); 
+            dot.append(nombreNodo).append(" -> ").append(nombreHijo).append(";\n");
+        }
+        return nombreNodo;
+    }
+
     private TablaSimbolos obtenerGlobal(TablaSimbolos tabla) {
         TablaSimbolos aux = tabla;
         while (aux.getTablaAnterior() != null) {
