@@ -4,8 +4,6 @@
  */
 package statements;
 
-import AST.Expr;
-import AST.Resultado;
 import AST.Stmt;
 import errores.Error.TipoError;
 import errores.ManejadorErrores;

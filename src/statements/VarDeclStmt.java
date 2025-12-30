@@ -13,7 +13,6 @@ import tokens.ReporteTabla;
 import simbolo.Simbolo;
 import simbolo.TablaSimbolos;
 import simbolo.TipoDato;
-import util.Consola;
 
 /**
  * 

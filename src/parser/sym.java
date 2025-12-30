@@ -8,58 +8,67 @@ package parser;
 /** CUP generated class containing symbol constants. */
 public class sym {
   /* terminals */
-  public static final int POT = 31;
-  public static final int POR = 28;
+  public static final int POT = 34;
+  public static final int POR = 31;
   public static final int CHAR = 5;
   public static final int ENTERO = 7;
-  public static final int XOR = 44;
-  public static final int DIFERENTE = 36;
+  public static final int XOR = 47;
+  public static final int DIFERENTE = 39;
   public static final int CASE = 19;
   public static final int DOUBLE = 3;
-  public static final int DOS_PUNTOS = 47;
+  public static final int DOS_PUNTOS = 50;
   public static final int CONTINUE = 25;
   public static final int INT = 2;
-  public static final int LLAVE_C = 51;
-  public static final int LLAVE_A = 50;
+  public static final int LLAVE_C = 55;
+  public static final int LLAVE_A = 54;
   public static final int FOR = 23;
-  public static final int NOT = 43;
-  public static final int AND = 41;
-  public static final int IGUAL = 45;
+  public static final int NOT = 46;
+  public static final int AND = 44;
+  public static final int IGUAL = 48;
   public static final int CARACTER = 9;
-  public static final int OR = 42;
-  public static final int DIV = 29;
-  public static final int INCREMENTO = 32;
+  public static final int OR = 45;
+  public static final int DIV = 32;
+  public static final int INCREMENTO = 35;
+  public static final int UMENOS = 37;
   public static final int IF = 16;
-  public static final int UMENOS = 34;
-  public static final int PUNTO_COMA = 46;
-  public static final int IGUAL_IGUAL = 35;
+  public static final int PUNTO_COMA = 49;
+  public static final int IGUAL_IGUAL = 38;
   public static final int ID = 13;
   public static final int EOF = 0;
   public static final int BOOLEAN = 4;
   public static final int DECIMAL = 8;
+  public static final int RETURN = 26;
   public static final int TRUE = 11;
-  public static final int DECREMENTO = 33;
+  public static final int NEW = 59;
+  public static final int DECREMENTO = 36;
   public static final int error = 1;
+  public static final int COMA = 51;
   public static final int CADENA = 10;
-  public static final int MENOS = 27;
-  public static final int MENOR = 39;
-  public static final int MOD = 30;
+  public static final int MENOS = 30;
+  public static final int MENOR = 42;
+  public static final int MOD = 33;
+  public static final int START = 28;
   public static final int BREAK = 24;
+  public static final int VOID = 27;
   public static final int SWITCH = 18;
-  public static final int MAYOR = 40;
+  public static final int MAYOR = 43;
   public static final int ELSE = 17;
+  public static final int PUNTO = 60;
   public static final int WHILE = 21;
-  public static final int MAYOR_IGUAL = 38;
+  public static final int LIST = 58;
+  public static final int MAYOR_IGUAL = 41;
   public static final int DEFAULT = 20;
   public static final int STRING = 6;
-  public static final int PAREN_C = 49;
-  public static final int PAREN_A = 48;
-  public static final int MENOR_IGUAL = 37;
+  public static final int PAREN_C = 53;
+  public static final int PAREN_A = 52;
+  public static final int MENOR_IGUAL = 40;
   public static final int FALSE = 12;
+  public static final int CORCH_C = 57;
+  public static final int CORCH_A = 56;
   public static final int VAR = 15;
   public static final int PRINT = 14;
   public static final int DO = 22;
-  public static final int MAS = 26;
+  public static final int MAS = 29;
   public static final String[] terminalNames = new String[] {
   "EOF",
   "error",
@@ -87,6 +96,9 @@ public class sym {
   "FOR",
   "BREAK",
   "CONTINUE",
+  "RETURN",
+  "VOID",
+  "START",
   "MAS",
   "MENOS",
   "POR",
@@ -109,10 +121,16 @@ public class sym {
   "IGUAL",
   "PUNTO_COMA",
   "DOS_PUNTOS",
+  "COMA",
   "PAREN_A",
   "PAREN_C",
   "LLAVE_A",
-  "LLAVE_C"
+  "LLAVE_C",
+  "CORCH_A",
+  "CORCH_C",
+  "LIST",
+  "NEW",
+  "PUNTO"
   };
 }
 

@@ -15,6 +15,7 @@ import errores.Error.TipoError;
 %column
 
 %ignorecase
+%state STRING
 
 %{
 
@@ -26,6 +27,10 @@ import errores.Error.TipoError;
         return new Symbol(type, yyline + 1, yycolumn + 1, value);
     }
 
+    private StringBuilder strBuf = new StringBuilder();
+    private void lexicoError(String mensaje){
+        ManejadorErrores.agregar(TipoError.LEXICO.toString(), mensaje, yyline+1, yycolumn+1);
+    }
 %}
 
 /* Expresiones regulares */
@@ -39,90 +44,86 @@ DECIMAL     = {DIGITO}+"."+{DIGITO}+
 ID          = {LETRA}{IDRESTO}*
 ESPACIO     = [ \t\r\n\f\u00A0]+
 
-CADENA      = \"([^\"\\]|\\[\"\'ntbr\\])*\"  
-CARACTER    = \'([^\'\\]|\\[\"\'ntbr\\])+\'
+CARACTER    = \'([^\\\']|\\.)\'
 
 COMENT_LINEA = "//".* 
 COMENT_MULTI = "/*"([^*]|\*+[^/])*\*+"/"
 
 %%
+<YYINITIAL>{
+        {ESPACIO}           { /* ignorar */ }
+        {COMENT_LINEA}      { /* ignorar comentario de una línea */ }
+        {COMENT_MULTI}      { /* ignorar comentario multi-línea */ }
 
-{ESPACIO}           { /* ignorar */ }
-{COMENT_LINEA}      { /* ignorar comentario de una línea */ }
-{COMENT_MULTI}      { /* ignorar comentario multi-línea */ }
+        "int"       { return symbol(sym.INT); }
+        "double"    { return symbol(sym.DOUBLE); }
+        "bool"      { return symbol(sym.BOOLEAN); }
+        "char"      { return symbol(sym.CHAR); }
+        "string"    { return symbol(sym.STRING); }
+        "var"       { return symbol(sym.VAR); }
+        "void"      { return symbol(sym.VOID); }
+        "return"    { return symbol(sym.RETURN); }
+        "start"     { return symbol(sym.START); }
+        "list"      { return symbol(sym.LIST); }
+        "new"       { return symbol(sym.NEW); }
+        
+        "true"      { return symbol(sym.TRUE); }
+        "false"     { return symbol(sym.FALSE); }
+        "print"     { return symbol(sym.PRINT); }
 
-"int"       { return symbol(sym.INT); }
-"double"    { return symbol(sym.DOUBLE); }
-"bool"      { return symbol(sym.BOOLEAN); }
-"char"      { return symbol(sym.CHAR); }
-"string"    { return symbol(sym.STRING); }
-"var"         { return symbol(sym.VAR); }
+        "if"        { return symbol(sym.IF); }   
+        "else"      { return symbol(sym.ELSE); }  
+        "switch"    { return symbol(sym.SWITCH); } 
+        "case"      { return symbol(sym.CASE); }  
+        "default"   { return symbol(sym.DEFAULT); }  
+        "break"     { return symbol(sym.BREAK); }  
+        "continue"  { return symbol(sym.CONTINUE); }
+        "while"     { return symbol(sym.WHILE); }
+        "for"       { return symbol(sym.FOR); }
+        "do"        { return symbol(sym.DO); }
 
-"true"      { return symbol(sym.TRUE); }
-"false"     { return symbol(sym.FALSE); }
-"print"     { return symbol(sym.PRINT); }
+        "++"        { return symbol(sym.INCREMENTO); }
+        "--"        { return symbol(sym.DECREMENTO); }
+        "**"        { return symbol(sym.POT); }
+        "=="        { return symbol(sym.IGUAL_IGUAL); }
+        "="         { return symbol(sym.IGUAL); }
+        "!="        { return symbol(sym.DIFERENTE); }
+        "<="        { return symbol(sym.MENOR_IGUAL); }
+        ">="        { return symbol(sym.MAYOR_IGUAL); }
+        "<"         { return symbol(sym.MENOR); }
+        ">"         { return symbol(sym.MAYOR); }
 
-"if"        { return symbol(sym.IF); }   
-"else"      { return symbol(sym.ELSE); }  
-"switch"    { return symbol(sym.SWITCH); } 
-"case"      { return symbol(sym.CASE); }  
-"default"   { return symbol(sym.DEFAULT); }  
-"break"     { return symbol(sym.BREAK); }  
-"continue"  { return symbol(sym.CONTINUE); }
-"while"     { return symbol(sym.WHILE); }
-"for"       { return symbol(sym.FOR); }
-"do"        { return symbol(sym.DO); }
+        "+"         { return symbol(sym.MAS); }
+        "-"         { return symbol(sym.MENOS); }
+        "*"         { return symbol(sym.POR); }
+        "/"         { return symbol(sym.DIV); }
+        "%"         { return symbol(sym.MOD); }
 
-"++"        { return symbol(sym.INCREMENTO); }
-"--"        { return symbol(sym.DECREMENTO); }
-"**"        { return symbol(sym.POT); }
-"=="        { return symbol(sym.IGUAL_IGUAL); }
-"="         { return symbol(sym.IGUAL); }
-"!="        { return symbol(sym.DIFERENTE); }
-"<="        { return symbol(sym.MENOR_IGUAL); }
-">="        { return symbol(sym.MAYOR_IGUAL); }
-"<"         { return symbol(sym.MENOR); }
-">"         { return symbol(sym.MAYOR); }
+        "&&"        { return symbol(sym.AND); }
+        "||"        { return symbol(sym.OR); }
+        "!"         { return symbol(sym.NOT); }
+        "^"         { return symbol(sym.XOR); }
 
-"+"         { return symbol(sym.MAS); }
-"-"         { return symbol(sym.MENOS); }
-"*"         { return symbol(sym.POR); }
-"/"         { return symbol(sym.DIV); }
-"%"         { return symbol(sym.MOD); }
-
-"&&"        { return symbol(sym.AND); }
-"||"        { return symbol(sym.OR); }
-"!"         { return symbol(sym.NOT); }
-"^"         { return symbol(sym.XOR); }
-
-"("         { return symbol(sym.PAREN_A); }
-")"         { return symbol(sym.PAREN_C); }
-"{"         { return symbol(sym.LLAVE_A); }
-"}"         { return symbol(sym.LLAVE_C); }
-";"         { return symbol(sym.PUNTO_COMA); }
-":"         { return symbol(sym.DOS_PUNTOS); }
-
-
-
-{DECIMAL}   { return symbol(sym.DECIMAL, yytext()); }
-{ENTERO}    { return symbol(sym.ENTERO, yytext()); }
-
-{ID}        { return symbol(sym.ID, yytext()); }
+        "("         { return symbol(sym.PAREN_A); }
+        ")"         { return symbol(sym.PAREN_C); }
+        "{"         { return symbol(sym.LLAVE_A); }
+        "}"         { return symbol(sym.LLAVE_C); }
+        "["         { return symbol(sym.CORCH_A); }
+        "]"         { return symbol(sym.CORCH_C); }
+        ";"         { return symbol(sym.PUNTO_COMA); }
+        ":"         { return symbol(sym.DOS_PUNTOS); }
+        ","         { return symbol(sym.COMA); }
+        "."         { return symbol(sym.PUNTO); }
 
 
-{CADENA}    { 
-                String text = yytext();
-                text = text.substring(1, text.length() - 1);
-                text = text.replace("\\n", "\n"); 
-                text = text.replace("\\t", "\t");   
-                text = text.replace("\\r", "\r");    
-                text = text.replace("\\\"", "\"");  
-                text = text.replace("\\'", "'");     
-                text = text.replace("\\\\", "\\");
-                return symbol(sym.CADENA, text);
-            }
 
-{CARACTER}  {
+        {DECIMAL}   { return symbol(sym.DECIMAL, yytext()); }
+        {ENTERO}    { return symbol(sym.ENTERO, yytext()); }
+        {ID}        { return symbol(sym.ID, yytext()); }
+
+        \"          { strBuf.setLength(0); yybegin(STRING); }
+
+        {CARACTER}  {
                 String text = yytext();
                 text = text.substring(1, text.length() - 1);
                 char c;
@@ -133,20 +134,40 @@ COMENT_MULTI = "/*"([^*]|\*+[^/])*\*+"/"
                         case 'r': c = '\r'; break;
                         case '\\': c = '\\'; break;
                         case '\'': c = '\''; break;
-                        default: c = text.charAt(1); // Fallback
+                        case '\"': c = '\"'; break;
+                        default: c = text.charAt(1);
                     }
                 } else {
                     c = text.charAt(0);
                 }
                 return symbol(sym.CARACTER, c);
             }
+}   
 
-\" [^\n\"]* \n  { 
-                ManejadorErrores.agregar(TipoError.LEXICO.toString(), "Cadena no cerrada (falta comilla de cierre)", yyline + 1, yycolumn + 1);
-                }
 
-.           { 
-                String mensaje = "Caracter no reconocido: '" + yytext() + "'";
-                ManejadorErrores.agregar(TipoError.LEXICO.toString(), mensaje, yyline + 1, yycolumn + 1);
-            }
+<STRING> {
+        \"      { yybegin(YYINITIAL); return symbol(sym.CADENA, strBuf.toString()); }
+        \\n     { strBuf.append('\n'); }
+        \\t     { strBuf.append('\t'); }
+        \\r     { strBuf.append('\r'); }
+        \\\"    { strBuf.append('"'); }
+        \\\'    { strBuf.append('\''); }
+        \\\\    { strBuf.append('\\'); }
+        \\[^\n] { strBuf.append(yytext().charAt(1)); }
+        \n      {
+                          lexicoError("String literal no cerrada (salto de linea antes de cerrar comillas)");
+                          yybegin(YYINITIAL);
+                        }
+        <<EOF>> {
+                          lexicoError("String literal no cerrada (fin de archivo)");
+                          yybegin(YYINITIAL);
+                          return symbol(sym.EOF);
+                        }
+        [^\\\"\n]+  { strBuf.append(yytext()); }
+        .           { strBuf.append(yytext()); }
+}
 
+
+
+
+<YYINITIAL>.   { lexicoError("Caracter no reconocido: '" + yytext() + "'"); }

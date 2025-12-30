@@ -6,6 +6,7 @@ package simbolo;
 
 import java.util.HashMap;
 import java.util.Map;
+import statements.MethodDeclStmt;
 
 /**
  *
@@ -15,17 +16,20 @@ public class TablaSimbolos {
 
     private TablaSimbolos tablaAnterior;
     private Map<String, Simbolo> tablaActual;
+    private Map<String, MethodDeclStmt> funciones;
     private String nombre;
 
     public TablaSimbolos() {
         this.tablaAnterior = null;
         this.tablaActual = new HashMap<>();
+        this.funciones = new HashMap<>();
         this.nombre = "Global";
     }
 
     public TablaSimbolos(TablaSimbolos tablaAnterior, String nombre) {
         this.tablaAnterior = tablaAnterior;
         this.tablaActual = new HashMap<>();
+        this.funciones = new HashMap<>();
         this.nombre = nombre;
     }
 
@@ -69,6 +73,23 @@ public class TablaSimbolos {
         return true;
     }
 
+    
+    public void guardarFuncion(String id, MethodDeclStmt funcion){
+        funciones.put(id.toLowerCase(), funcion);
+    }
+    
+    public MethodDeclStmt buscarFuncion(String id){
+        String clave = id.toLowerCase();
+        TablaSimbolos t = this;
+        while(t != null){
+            if(t.funciones.containsKey(clave)){
+                return t.funciones.get(clave);
+            }
+            t = t.tablaAnterior;
+        }
+        return null;
+    }
+    
     public TablaSimbolos getTablaAnterior() {
         return tablaAnterior;
     }

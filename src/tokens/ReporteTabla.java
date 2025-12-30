@@ -6,10 +6,8 @@ package tokens;
 
 import java.io.FileWriter;
 import java.io.IOException;
-import java.io.PrintWriter;
 import java.util.ArrayList;
 import simbolo.Simbolo;
-import util.Consola;
 
 /**
  *

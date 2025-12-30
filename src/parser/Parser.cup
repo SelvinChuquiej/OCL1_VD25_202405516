@@ -13,6 +13,7 @@ import expresiones.*;
 import statements.*;
 import errores.ManejadorErrores;
 import errores.Error.TipoError;
+import errores.ReturnException;
 
 parser code {:
     public Parser(Lexer lexer) {
@@ -44,7 +45,6 @@ parser code {:
         String mensaje = "Error Sintáctico Fatal (Irrecuperable): Se detuvo en '" + lexema + "'";     
         ManejadorErrores.agregar(TipoError.SINTACTICO.toString(), mensaje, linea, columna);    
     }
-
 :};
 
 action code {:
@@ -59,20 +59,28 @@ terminal ID;
 terminal PRINT, VAR;
 terminal IF, ELSE, SWITCH, CASE, DEFAULT;
 terminal WHILE, DO, FOR;
-terminal BREAK, CONTINUE;
+terminal BREAK, CONTINUE, RETURN, VOID, START;
 terminal MAS, MENOS, POR, DIV, MOD, POT;
 terminal INCREMENTO, DECREMENTO;
 terminal UMENOS;
 terminal IGUAL_IGUAL, DIFERENTE, MENOR_IGUAL, MAYOR_IGUAL, MENOR, MAYOR;
 terminal AND, OR, NOT, XOR;
-terminal IGUAL, PUNTO_COMA, DOS_PUNTOS;
-terminal PAREN_A, PAREN_C, LLAVE_A, LLAVE_C;
+terminal IGUAL, PUNTO_COMA, DOS_PUNTOS, COMA;
+terminal PAREN_A, PAREN_C, LLAVE_A, LLAVE_C, CORCH_A, CORCH_C;
+
+terminal LIST, NEW, PUNTO;
 
 non terminal List inicio, lista_sentencias;
 non terminal Stmt sentencia;
 non terminal Stmt if_stmt, switch_stmt, while_stmt, do_while_stmt, for_stmt;
 non terminal Stmt break_stmt, continue_stmt;
+non terminal Stmt metodo_decl, return_stmt, start_stmt;
+non terminal List<Param> lista_params;
+non terminal List<Expr> lista_argumentos;
+non terminal List<Expr> lista_expresiones;
+non terminal List<List<Expr>> lista_de_listas_expr;
 non terminal List<CaseStmt> lista_casos;
+non terminal Stmt declaracion_lista;
 non terminal CaseStmt caso_item;
 non terminal Stmt default_case;
 non terminal Stmt for_init, for_update;
@@ -80,6 +88,7 @@ non terminal Stmt print_stmt, declaracion, asignacion, incremento, decremento;
 non terminal Expr expr;
 non terminal TipoDato tipo;
 
+precedence left PUNTO;
 precedence left OR;
 precedence left AND;
 precedence left XOR;
@@ -112,6 +121,7 @@ lista_sentencias ::=
 sentencia ::=
     print_stmt:p            {: RESULT = p; :} 
     | declaracion:d         {: RESULT = d; :}
+    | metodo_decl:m         {: RESULT = m; :}
     | asignacion:a          {: RESULT = a; :}
     | incremento:i          {: RESULT = i; :}
     | decremento:dec        {: RESULT = dec; :}
@@ -121,16 +131,38 @@ sentencia ::=
     | break_stmt:br         {: RESULT = br; :}
     | continue_stmt:ct      {: RESULT = ct; :}
     | for_stmt:f            {: RESULT = f; :}
-    | do_while_stmt:dwh     {: RESULT = dwh; :}
-    | error PUNTO_COMA     
+    | do_while_stmt:dwh     {: RESULT = dwh; :}    
+    | return_stmt:r         {: RESULT = r; :}
+    | start_stmt:ss         {: RESULT = ss; :}
+    | declaracion_lista:dl  {: RESULT = dl; :}   
+    | expr:e PUNTO_COMA     {: RESULT = e; :}
+    | VAR ID:id DOS_PUNTOS tipo:t CORCH_A CORCH_C IGUAL CORCH_A lista_expresiones:l CORCH_C PUNTO_COMA
         {: 
-            System.out.println("Error sintáctico recuperado por ';'"); 
-            RESULT = null; 
+            RESULT = new VectorDeclStmt(id.toString(), t, l, idleft, idright); 
         :}
-    | error LLAVE_C
+    | VAR ID:id DOS_PUNTOS tipo:t CORCH_A CORCH_C CORCH_A CORCH_C IGUAL CORCH_A lista_de_listas_expr:l CORCH_C PUNTO_COMA
         {: 
-            System.out.println("Error sintáctico recuperado '}'"); 
-             RESULT = null; 
+            RESULT = new Vector2DDeclStmt(id.toString(), t, l, idleft, idright); 
+        :}
+    | ID:id CORCH_A expr:idx CORCH_C IGUAL expr:val PUNTO_COMA
+        {: 
+            RESULT = new VectorAsigStmt(id.toString(), idx, val, idleft, idright); 
+        :}
+    | ID:id CORCH_A expr:idx1 CORCH_C CORCH_A expr:idx2 CORCH_C IGUAL expr:val PUNTO_COMA
+        {: 
+            RESULT = new Vector2DAsigStmt(id.toString(), idx1, idx2, val, idleft, idright); 
+        :}
+    | error:err PUNTO_COMA     
+        {: 
+            String msg = "Error Sintáctico: Instrucción mal formada. Se recuperó en ';'";
+            System.err.println(msg);
+            RESULT = null;
+        :}
+    | error:err LLAVE_C
+        {: 
+            String msg = "Error Sintáctico: Error en bloque de código. Se recuperó en '}'";
+            System.err.println(msg);
+            RESULT = null;
         :}
     ;
 
@@ -200,12 +232,20 @@ do_while_stmt ::=
         :}
     ;
 
+declaracion_lista ::=
+    LIST MENOR tipo:t MAYOR ID:id IGUAL NEW LIST PAREN_A PAREN_C PUNTO_COMA
+        {: 
+            RESULT = new ListDeclStmt(t, id.toString(), idleft, idright); 
+        :}
+    ;
+
 for_stmt ::=
     FOR:f PAREN_A for_init:init expr:cond PUNTO_COMA for_update:up PAREN_C LLAVE_A lista_sentencias:l LLAVE_C
         {:
             RESULT = new ForStmt(init, up, cond, l, fleft, fright);
         :}
     ;
+
 for_init ::=
     declaracion:d   
         {: 
@@ -255,6 +295,70 @@ declaracion ::=
     |  VAR ID:nombre DOS_PUNTOS tipo:t PUNTO_COMA
         {:
             RESULT = new VarDeclStmt(t, nombre.toString(), nombreleft, nombreright);
+        :}
+    ;
+
+metodo_decl ::= 
+    tipo:t ID:id PAREN_A lista_params:p PAREN_C LLAVE_A lista_sentencias:l LLAVE_C
+        {: 
+            RESULT = new MethodDeclStmt(t, id.toString(), p, l, tleft, tright);    
+        :}
+    | VOID:v ID:id PAREN_A lista_params:p PAREN_C LLAVE_A lista_sentencias:l LLAVE_C
+        {: 
+            RESULT = new MethodDeclStmt(TipoDato.VOID, id.toString(), p, l, vleft, vright); 
+        :}
+    ;
+
+lista_params ::= 
+    lista_params:l COMA tipo:t ID:id  
+        {: 
+            l.add(new Param(t, id.toString())); 
+            RESULT = l; 
+        :}
+    | tipo:t ID:id                      
+        {: 
+            List<Param> lp = new ArrayList<>(); 
+            lp.add(new Param(t, id.toString())); 
+            RESULT = lp; 
+        :}
+    | /* vacío */                        
+        {: 
+            RESULT = new ArrayList<Param>(); 
+        :}
+    ;
+
+lista_argumentos ::=
+    lista_argumentos:l COMA expr:e 
+        {: 
+            l.add(e); 
+            RESULT = l;
+        :}
+    | expr:e                         
+        {: 
+            List<Expr> la = new ArrayList<>(); 
+            la.add(e); RESULT = la; 
+        :}
+    | /* vacío */                    
+        {: 
+            RESULT = new ArrayList<Expr>(); 
+        :}
+    ;
+
+return_stmt ::=
+    RETURN:r PUNTO_COMA
+        {: 
+            RESULT = new ReturnStmt(null, rleft, rright); 
+        :}
+    | RETURN:r expr:e PUNTO_COMA
+        {: 
+            RESULT = new ReturnStmt(e, rleft, rright); 
+        :}
+    ;
+
+start_stmt ::= 
+    START:s ID:id PAREN_A lista_argumentos:la PAREN_C PUNTO_COMA
+        {: 
+            RESULT = new StartStmt(id.toString(), la, sleft, sright); 
         :}
     ;
 
@@ -403,5 +507,52 @@ expr ::=
     | PAREN_A expr:e PAREN_C
         {:
            RESULT = e;
+        :}
+    | ID:id PAREN_A lista_argumentos:la PAREN_C
+        {: 
+            RESULT = new CallExpr(id.toString(), la, idleft, idright); 
+        :}
+    | ID:id CORCH_A expr:idx CORCH_C
+        {: 
+            RESULT = new VectorAccessExpr(id.toString(), idx, idleft, idright); 
+        :}
+    | ID:id CORCH_A expr:idx1 CORCH_C CORCH_A expr:idx2 CORCH_C
+        {: 
+            RESULT = new Vector2DAccessExpr(id.toString(), idx1, idx2, idleft, idright); 
+        :}
+    | ID:id PUNTO ID:metodo PAREN_A lista_argumentos:la PAREN_C
+        {: 
+            RESULT = new MethodCallStmt(id.toString(), metodo.toString(), la, idleft, idright); 
+        :}
+    ;
+
+lista_expresiones ::=
+    lista_expresiones:l COMA expr:e  
+        {: 
+            l.add(e); 
+            RESULT = l; 
+        :}
+    | expr:e                        
+        {: 
+            List<Expr> l = new ArrayList<>();
+            l.add(e); RESULT = l; 
+        :}
+    | CORCH_A CORCH_C 
+        {: 
+            // Para manejar inicializaciones vacías []
+            RESULT = new ArrayList<Expr>(); 
+        :}
+    ;
+
+lista_de_listas_expr ::=
+    lista_de_listas_expr:l COMA CORCH_A lista_expresiones:subL CORCH_C 
+        {: 
+            l.add(subL); 
+            RESULT = l; 
+        :}
+    | CORCH_A lista_expresiones:subL CORCH_C 
+        {: 
+            List<List<Expr>> l = new ArrayList<>();     
+            l.add(subL); RESULT = l; 
         :}
     ;

@@ -13,7 +13,6 @@ import simbolo.TablaSimbolos;
 import simbolo.TipoDato;
 import tokens.ReporteTabla;
 import errores.Error.TipoError;
-import util.Consola;
 
 /**
  *

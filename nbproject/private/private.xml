@@ -3,10 +3,8 @@
     <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group>
-            <file>file:/C:/Users/Selvi/Documents/NetBeansProjects/OCL1_VD25_202405516/src/errores/ManejadorErrores.java</file>
-            <file>file:/C:/Users/Selvi/Documents/NetBeansProjects/OCL1_VD25_202405516/src/simbolo/TablaSimbolos.java</file>
-            <file>file:/C:/Users/Selvi/Documents/NetBeansProjects/OCL1_VD25_202405516/src/tokens/ReporteTabla.java</file>
-            <file>file:/C:/Users/Selvi/Documents/NetBeansProjects/OCL1_VD25_202405516/src/UI/MainWindow.java</file>
+            <file>file:/C:/Users/Selvi/Documents/NetBeansProjects/OCL1_VD25_202405516/src/Main.java</file>
+            <file>file:/C:/Users/Selvi/Documents/NetBeansProjects/OCL1_VD25_202405516/src/parser/Parser.cup</file>
         </group>
     </open-files>
 </project-private>

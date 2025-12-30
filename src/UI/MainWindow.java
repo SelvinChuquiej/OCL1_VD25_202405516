@@ -23,6 +23,11 @@ import java.io.IOException;
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
 import javax.swing.filechooser.FileNameExtensionFilter;
+import statements.MethodDeclStmt;
+import statements.StartStmt;
+import statements.VarDeclStmt;
+import statements.Vector2DDeclStmt;
+import statements.VectorDeclStmt;
 import tokens.ReporteTabla;
 import util.Editor;
 
@@ -196,20 +201,35 @@ public class MainWindow extends javax.swing.JFrame {
                 if (!ManejadorErrores.hayErrores()) {
 
                     for (Stmt stmt : listaStmt) {
-                        if (stmt == null) {
-                            continue;
-                        }
-                        try {
-                            stmt.ejecutar(tablaGlobal);
-                        } catch (Exception e) {
-                            ManejadorErrores.agregar("Ejecucion", "Error recuperable: " + e.getMessage(), stmt.getLinea(), stmt.getColumna());
-                            Consola.print("Error en ejecucion: " + e.getMessage());
+                        if (stmt != null) {
+                            if (stmt instanceof MethodDeclStmt
+                                    || stmt instanceof VarDeclStmt
+                                    || stmt instanceof VectorDeclStmt
+                                    || stmt instanceof Vector2DDeclStmt) {
+
+                                try {
+                                    stmt.ejecutar(tablaGlobal);
+                                } catch (Exception e) {
+                                    ManejadorErrores.agregar("Ejecucion", "Error en declaracion global: " + e.getMessage(), stmt.getLinea(), stmt.getColumna());
+                                }
+                            }
                         }
                     }
+                    
+                    for (Stmt stmt : listaStmt) {
+                        if (stmt != null && stmt instanceof StartStmt) {
+                            try {
+                                stmt.ejecutar(tablaGlobal);
+                            } catch (Exception e) {
+                                ManejadorErrores.agregar("Ejecucion", "Error en START: " + e.getMessage(), stmt.getLinea(), stmt.getColumna());
+                                Consola.print("Error en ejecucion: " + e.getMessage());
+                            }
+                        }
+                    }
+
                 } else {
                     Consola.print("No se puede ejecutar porque el codigo contiene errores sintacticos");
                 }
-
                 if (ManejadorErrores.hayErrores()) {
                     Consola.print("\n=== EJECUCIÓN FINALIZADA CON ERRORES ===\n");
                 } else {

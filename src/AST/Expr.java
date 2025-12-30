@@ -7,12 +7,13 @@ package AST;
 import AST.NodoAST;
 import AST.Resultado;
 import simbolo.TablaSimbolos;
+import statements.ControlStmt;
 
 /**
  *
  * @author Selvi
  */
-public abstract class Expr extends NodoAST {
+public abstract class Expr extends Stmt {
 
     public Expr(int linea, int columna) {
         super(linea, columna);
@@ -20,4 +21,9 @@ public abstract class Expr extends NodoAST {
 
     public abstract Resultado evaluar(TablaSimbolos tabla);
 
+    @Override
+    public ControlStmt ejecutar(TablaSimbolos tabla) {
+        this.evaluar(tabla);
+        return null;
+    }
 }
